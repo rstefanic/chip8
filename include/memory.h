@@ -2,5 +2,5 @@
 
 typedef struct {
     /* 4k memory */
-    char memory[BYTE_SIZE * 4000];
+    char memory[4096];
 } Memory;

@@ -7,9 +7,14 @@ OBJS = framebuffer.c \
 CFLAGS = -Wall -Wextra
 TERMINAL = gnome-terminal
 NCURSES = -lncurses
+INCLUDE = -Iinclude
 
 build:
-	gcc $(CFLAGS) $(OBJS) $(NCURSES) -o chip8
+	gcc $(CFLAGS) \
+		$(INCLUDE) \
+		$(OBJS) \
+		$(NCURSES) \
+		-o chip8
 
 run:
 	$(TERMINAL) \
