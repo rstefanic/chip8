@@ -1,10 +1,15 @@
 #include "framebuffer.h"
 #include "memory.h"
 #include "cpu.h"
+#include "bcd.h"
 
 int main()
 {
     CPU *cpu = new_cpu();
+
+    // Dummy Values
+    cpu->v0 = 125;
+    cpu->v1 = 200;
 
     initscr(); // set up memory and clears the screen for ncurses
 
@@ -23,9 +28,24 @@ int main()
     wrefresh(win);  // Refresh the window
     getch();
 
+#if DEBUG
+    mvwprintw(win, 1, 1, "DEBUG Decrement");
+#else
     mvwprintw(win, 1, 1, "Before Decrement");
+#endif
+
     mvwprintw(win, 2, 1, "DT: %d", cpu->dt);
     mvwprintw(win, 3, 1, "ST: %d", cpu->st);
+    mvwprintw(win, 4, 1, "V0: %d", cpu->v0);
+    mvwprintw(win, 5, 1, "V1: %d", cpu->v1);
+
+    mvwprintw(win, 7, 1, "V0 hundreds: %d", bcd_hundreds_at(cpu->v0));
+    mvwprintw(win, 8, 1, "V0 tens: %d", bcd_tens_at(cpu->v0));
+    mvwprintw(win, 9, 1, "V0 ones: %d", bcd_ones_at(cpu->v0));
+
+    mvwprintw(win, 11, 1, "V1 hundreds: %d", bcd_hundreds_at(cpu->v1));
+    mvwprintw(win, 12, 1, "V1 tens: %d", bcd_tens_at(cpu->v1));
+    mvwprintw(win, 13, 1, "V1 ones: %d", bcd_ones_at(cpu->v1));
     refresh();
     wrefresh(win);
     getch();
