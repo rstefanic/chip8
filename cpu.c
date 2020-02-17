@@ -23,6 +23,8 @@ CPU *new_cpu()
     cpu->st = 0;
     cpu->dt = 0;
 
+    cpu->stack = new_stack();
+
     return cpu;
 }
 
