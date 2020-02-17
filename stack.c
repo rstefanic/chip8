@@ -1,5 +1,16 @@
 #include "stack.h"
 
+Stack* new_stack()
+{
+    Stack *stack;
+    stack = (Stack*)malloc(sizeof(Stack));
+
+    stack->sp = 0;
+    stack->pc = 0;
+
+    return stack;
+}
+
 char get_current_value(Stack *stack) 
 {
     return *(stack->sp);
