@@ -22,6 +22,7 @@ CPU *new_cpu()
     cpu->vf = 0;
     cpu->st = 0;
     cpu->dt = 0;
+    cpu->pc = 0;
 
     cpu->stack = new_stack();
 

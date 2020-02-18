@@ -4,10 +4,7 @@ Stack* new_stack()
 {
     Stack *stack;
     stack = (Stack*)malloc(sizeof(Stack));
-
     stack->sp = 0;
-    stack->pc = 0;
-
     return stack;
 }
 
@@ -20,9 +17,4 @@ void push(Stack *stack, char val)
 {
     stack->buffer[stack->sp] = val;
     (stack->sp)++;
-}
-
-char get_pc(Stack *stack)
-{
-    return stack->pc;
 }

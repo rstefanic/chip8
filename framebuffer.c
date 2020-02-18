@@ -80,30 +80,30 @@ void debug_output(WINDOW *win, CPU *cpu)
     mvwprintw(win, 0, 26, " DEBUG CHIP8 ");
 
     /* Left Column */
-    mvwprintw(win, 2, 2, "V0: %d", cpu->v0);
-    mvwprintw(win, 3, 2, "V1: %d", cpu->v1);
-    mvwprintw(win, 4, 2, "V2: %d", cpu->v2);
-    mvwprintw(win, 5, 2, "V3: %d", cpu->v3);
-    mvwprintw(win, 6, 2, "V4: %d", cpu->v4);
-    mvwprintw(win, 7, 2, "V5: %d", cpu->v5);
-    mvwprintw(win, 8, 2, "V6: %d", cpu->v6);
-    mvwprintw(win, 9, 2, "V7: %d", cpu->v7);
-    mvwprintw(win, 10, 2, "V8: %d", cpu->v8);
-    mvwprintw(win, 11, 2, "V9: %d", cpu->v9);
-    mvwprintw(win, 12, 2, "VA: %d", cpu->va);
-    mvwprintw(win, 13, 2, "VB: %d", cpu->vb);
-    mvwprintw(win, 14, 2, "VC: %d", cpu->vc);
-    mvwprintw(win, 15, 2, "VD: %d", cpu->vd);
-    mvwprintw(win, 16, 2, "VE: %d", cpu->ve);
-    mvwprintw(win, 17, 2, "VF: %d", cpu->vf);
+    mvwprintw(win, 2, 2, "V0: 0x%.2x (%d)", cpu->v0, cpu->v0);
+    mvwprintw(win, 3, 2, "V1: 0x%.2x (%d)", cpu->v1, cpu->v1);
+    mvwprintw(win, 4, 2, "V2: 0x%.2x (%d)", cpu->v2, cpu->v2);
+    mvwprintw(win, 5, 2, "V3: 0x%.2x (%d)", cpu->v3, cpu->v3);
+    mvwprintw(win, 6, 2, "V4: 0x%.2x (%d)", cpu->v4, cpu->v4);
+    mvwprintw(win, 7, 2, "V5: 0x%.2x (%d)", cpu->v5, cpu->v5);
+    mvwprintw(win, 8, 2, "V6: 0x%.2x (%d)", cpu->v6, cpu->v6);
+    mvwprintw(win, 9, 2, "V7: 0x%.2x (%d)", cpu->v7, cpu->v7);
+    mvwprintw(win, 10, 2, "V8: 0x%.2x (%d)", cpu->v8, cpu->v8);
+    mvwprintw(win, 11, 2, "V9: 0x%.2x (%d)", cpu->v9, cpu->v9);
+    mvwprintw(win, 12, 2, "VA: 0x%.2x (%d)", cpu->va, cpu->va);
+    mvwprintw(win, 13, 2, "VB: 0x%.2x (%d)", cpu->vb, cpu->vb);
+    mvwprintw(win, 14, 2, "VC: 0x%.2x (%d)", cpu->vc, cpu->vc);
+    mvwprintw(win, 15, 2, "VD: 0x%.2x (%d)", cpu->vd, cpu->vd);
+    mvwprintw(win, 16, 2, "VE: 0x%.2x (%d)", cpu->ve, cpu->ve);
+    mvwprintw(win, 17, 2, "VF: 0x%.2x (%d)", cpu->vf, cpu->vf);
 
-    mvwprintw(win, 19, 2, "ST: %d", cpu->st);
-    mvwprintw(win, 20, 2, "DT: %d", cpu->dt);
+    mvwprintw(win, 19, 2, "ST: 0x%.2x (%d)", cpu->st, cpu->st);
+    mvwprintw(win, 20, 2, "DT: 0x%.2x (%d)", cpu->dt, cpu->dt);
 
     /* Right Column */
     // 32 for half of the framebuffer width
-    mvwprintw(win, 2, 32, "SP: %d", cpu->stack->sp);
-    mvwprintw(win, 3, 32, "PC: %d", cpu->stack->pc);
+    mvwprintw(win, 2, 32, "PC: 0x%.2x (%d)", cpu->pc, cpu->pc);
+    mvwprintw(win, 3, 32, "SP: 0x%.2x (%d)", cpu->stack->sp, cpu->stack->sp);
 
     refresh();
     wrefresh(win);
