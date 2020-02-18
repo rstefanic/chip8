@@ -1,5 +1,6 @@
 #include "chip8.h"
 #include "cpu.h"
+#include "rng.h"
 
 #define TOTAL_FRAMEBUFFER_SIZE FRAME_WIDTH * FRAME_HEIGHT
 
