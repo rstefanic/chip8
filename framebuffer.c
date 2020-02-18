@@ -77,7 +77,7 @@ void debug_output(WINDOW *win, CPU *cpu)
     werase(win);
     box(win, 0, 0);
 
-    mvwprintw(win, 0, 26, "DEBUG CHIP8");
+    mvwprintw(win, 0, 26, " DEBUG CHIP8 ");
 
     /* Left Column */
     mvwprintw(win, 2, 2, "V0: %d", cpu->v0);
