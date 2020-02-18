@@ -24,9 +24,24 @@ int main()
     WINDOW *win = newwin(FRAME_HEIGHT, FRAME_WIDTH, start_y, start_x);
 
 #if DEBUG
+    // testing fetch_op
+    unsigned int offset = PROG_DATA_SEGMENT;
+    cpu->memory[offset] = 0x11;
+    cpu->pc = &(cpu->memory[offset]);
+    offset++;
+    cpu->memory[offset] = 0x22;
+    offset++;
+    cpu->i = fetch_op(cpu);
+
     setup_debug_output(win);
     debug_output(win, cpu);
     getch();
+
+    cpu->memory[offset] = 0x33;
+    offset++;
+    cpu->memory[offset] = 0xff;
+    offset++;
+    cpu->i = fetch_op(cpu);
 
     decrement_dt(cpu);
     decrement_st(cpu);
@@ -102,8 +117,11 @@ void debug_output(WINDOW *win, CPU *cpu)
 
     /* Right Column */
     // 32 for half of the framebuffer width
-    mvwprintw(win, 2, 32, "PC: 0x%.2x (%d)", cpu->pc, cpu->pc);
-    mvwprintw(win, 3, 32, "SP: 0x%.2x (%d)", cpu->stack->sp, cpu->stack->sp);
+    mvwprintw(win, 2, 32, "PC: 0x%.2x", cpu->pc);
+    mvwprintw(win, 3, 32, "IR: 0x%.4x", cpu->i);
+    mvwprintw(win, 4, 32, "SP: 0x%.2x (%d)", cpu->stack->sp, cpu->stack->sp);
+
+    mvwprintw(win, 30, 2, "Press any key to continue execution... ");
 
     refresh();
     wrefresh(win);
