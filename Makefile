@@ -3,7 +3,8 @@ all: build run
 OBJS = framebuffer.c \
 	stack.c \
 	cpu.c \
-	bcd.c
+	bcd.c \
+	rng.c
 
 CC = gcc
 CFLAGS = -Wall -Wextra
