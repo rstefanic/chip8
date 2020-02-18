@@ -11,22 +11,18 @@ Stack* new_stack()
     return stack;
 }
 
-char get_current_value(Stack *stack) 
+char pop(Stack *stack)
 {
-    return *(stack->sp);
+    return stack->buffer[(stack->sp)--];
 }
 
-void increment_sp(Stack *stack) 
+void push(Stack *stack, char val)
 {
-    stack->sp++;
+    stack->buffer[stack->sp] = val;
+    (stack->sp)++;
 }
 
-void decrement_sp(Stack *stack)
-{
-    stack->sp--;
-}
-
-char* get_pc(Stack *stack)
+char get_pc(Stack *stack)
 {
     return stack->pc;
 }
