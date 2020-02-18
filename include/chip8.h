@@ -9,3 +9,6 @@
 
 /* Size in bits */
 #define BYTE_SIZE 8
+#define END_FONT_SEGMENT 0x080
+#define PROG_DATA_SEGMENT 0x200
+#define MAX_MEMORY 0xFFF
