@@ -23,6 +23,7 @@ CPU *new_cpu()
     cpu->st = 0;
     cpu->dt = 0;
     cpu->pc = 0;
+    cpu->i = 0;
 
     cpu->stack = new_stack();
 
@@ -37,4 +38,23 @@ void decrement_st(CPU *cpu)
 void decrement_dt(CPU *cpu)
 {
     cpu->st--;
+}
+
+void increment_pc(CPU *cpu)
+{
+    // instructions are read 16-bits at a time
+    cpu->pc = cpu->pc + 2;
+}
+
+unsigned short fetch_op(CPU *cpu)
+{
+    unsigned short op = 0;
+    unsigned char *pc = cpu->pc;
+
+    // Shifted over 8 bits because
+    // the instructions are 16-bit
+    op = (*pc) << BYTE_SIZE;
+    op += *(pc + 1);
+    increment_pc(cpu);
+    return op;
 }

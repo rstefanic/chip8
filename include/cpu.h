@@ -6,7 +6,14 @@
 typedef char SoundTimer;
 
 typedef struct {
+    // Contains the stack + stack pointer
     Stack* stack;
+
+    // 0xFFF is the size of the memory
+    // 0x000 to 0x080: reserved for font
+    // 0x200 to 0xFFF: program data
+    unsigned char memory[MAX_MEMORY];
+
     unsigned char v0;
     unsigned char v1;
     unsigned char v2;
@@ -25,9 +32,11 @@ typedef struct {
     unsigned char vf;
     unsigned char st;
     unsigned char dt;
-    unsigned char pc;
+    unsigned char *pc;
+    unsigned short i;
 } CPU;
 
 CPU *new_cpu();
 void decrement_st(CPU *cpu);
 void decrement_dt(CPU *cpu);
+unsigned short fetch_op(CPU *cpu);
