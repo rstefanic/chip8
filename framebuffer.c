@@ -24,6 +24,14 @@ int main()
     WINDOW *win = newwin(FRAME_HEIGHT, FRAME_WIDTH, start_y, start_x);
 
 #if DEBUG
+    /* CHIP-8 interpreter is preloaded with sprite data of the 16 hex digits */
+    /* The memory adddresses where this resides is unspeicifed, but must be
+     * lower than address 0x200 (the PROG_DATA_SEGMENT)
+     */
+
+    unsigned char* mem = &(cpu->memory[0]);
+    memcpy(mem, &(font[0][0]), 16 * 5);
+
     // testing fetch_op
     unsigned int offset = PROG_DATA_SEGMENT;
     cpu->memory[offset] = 0x11;
@@ -120,6 +128,15 @@ void debug_output(WINDOW *win, CPU *cpu)
     mvwprintw(win, 2, 32, "PC: 0x%.2x", cpu->pc);
     mvwprintw(win, 3, 32, "IR: 0x%.4x", cpu->i);
     mvwprintw(win, 4, 32, "SP: 0x%.2x (%d)", cpu->stack->sp, cpu->stack->sp);
+    mvwprintw(win, 6, 32, "MemCheck @ 0x%.2x : 0x%.2x",
+        0x00,
+        cpu->memory[0x00]);
+    mvwprintw(win, 7, 32, "MemCheck @ 0x%.2x : 0x%.2x",
+        END_FONT_SEGMENT,
+        cpu->memory[END_FONT_SEGMENT]);
+    mvwprintw(win, 8, 32, "MemCheck @ 0x%.2x : 0x%.2x",
+        PROG_DATA_SEGMENT,
+        cpu->memory[PROG_DATA_SEGMENT]);
 
     mvwprintw(win, 30, 2, "Press any key to continue execution... ");
 
