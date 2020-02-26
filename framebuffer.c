@@ -32,18 +32,23 @@ int main()
     unsigned char* mem = &(cpu->memory[0]);
     memcpy(mem, &(font[0][0]), 16 * 5);
 
-    // testing fetch_op
+    // Load some default data for testing
     unsigned int offset = PROG_DATA_SEGMENT;
     cpu->memory[offset] = 0x11;
     cpu->pc = &(cpu->memory[offset]);
     offset++;
     cpu->memory[offset] = 0x22;
     offset++;
+
+    // testing fetch_op
     cpu->i = fetch_op(cpu);
 
     setup_debug_output(win);
     debug_output(win, cpu);
     getch();
+
+    void *program_data_segment_start = &(cpu->memory[PROG_DATA_SEGMENT]);
+    load_program_into_memory(program_data_segment_start, "./roms/test.ch8");
 
     cpu->memory[offset] = 0x33;
     offset++;
@@ -137,6 +142,9 @@ void debug_output(WINDOW *win, CPU *cpu)
     mvwprintw(win, 8, 32, "MemCheck @ 0x%.2x : 0x%.2x",
         PROG_DATA_SEGMENT,
         cpu->memory[PROG_DATA_SEGMENT]);
+    mvwprintw(win, 9, 32, "MemCheck @ 0x%.2x : 0x%.2x",
+        PROG_DATA_SEGMENT + 1,
+        cpu->memory[PROG_DATA_SEGMENT + 1]);
 
     mvwprintw(win, 30, 2, "Press any key to continue execution... ");
 
