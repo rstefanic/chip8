@@ -40,3 +40,4 @@ CPU *new_cpu();
 void decrement_st(CPU *cpu);
 void decrement_dt(CPU *cpu);
 unsigned short fetch_op(CPU *cpu);
+void load_program_into_memory(void *program_data_segment, char *program_name);

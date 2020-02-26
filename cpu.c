@@ -58,3 +58,17 @@ unsigned short fetch_op(CPU *cpu)
     increment_pc(cpu);
     return op;
 }
+
+void load_program_into_memory(void *program_data_segment, char *program_name)
+{
+    FILE* fp;
+    long file_len;
+
+    fp = fopen(program_name, "rb");
+    fseek(fp, 0, SEEK_END);
+    file_len = ftell(fp);
+    rewind(fp);
+
+    fread((unsigned char*)program_data_segment, file_len, 1, fp);
+    fclose(fp);
+}
