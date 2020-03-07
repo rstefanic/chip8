@@ -3,6 +3,61 @@
 #include "chip8.h"
 #include "stack.h"
 
+typedef enum {
+    CLS,
+    RET,
+    JP,
+    CALL,
+    SE,
+    SNE,
+    LD,
+    ADD,
+    OR,
+    AND,
+    XOR,
+    SUB,
+    SHR,
+    SUBN,
+    SHL,
+    RND,DRW,
+    SKP,
+    SKNP
+} OP_CODE;
+
+typedef enum {
+    V0, V1, V2, V3, V4, V5, V6, V7, V8, V9,
+    VA, VB, VC, VD, VE, VF, ST, DT, I
+} Register;
+
+typedef union {
+    Register reg;
+    int immediate_value;
+} Operand;
+
+typedef Operand Destination;
+typedef Operand Source;
+
+typedef struct {
+    OP_CODE op;
+} SingleOp;
+
+typedef struct {
+    OP_CODE op;
+    Destination dest;
+} OpWithDest;
+
+typedef struct {
+    OP_CODE op;
+    Destination dest;
+    Source src;
+} OpWithDestAndSrc;
+
+union Op {
+    SingleOp op;
+    OpWithDest op_with_dest;
+    OpWithDestAndSrc op_with_dest_and_src;
+};
+
 typedef char SoundTimer;
 
 typedef struct {
