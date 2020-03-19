@@ -96,4 +96,8 @@ CPU *new_cpu();
 void decrement_st(CPU *cpu);
 void decrement_dt(CPU *cpu);
 unsigned short fetch(CPU *cpu);
+Instruction* decode(unsigned short op_code);
+void execute(CPU* cpu, Instruction* instruction);
+int get_register(CPU* cpu, Register reg);
+void set_register(CPU* cpu, Register reg, int val);
 void load_program_into_memory(void *program_data_segment, char *program_name);

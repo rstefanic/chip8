@@ -276,6 +276,72 @@ Instruction* decode(unsigned short op_code)
     return ins;
 }
 
+void execute(CPU* cpu, Instruction* instruction)
+{
+    Op op = instruction->op;
+
+    if (op == ADD_VX_BYTE) {
+        int current_val_at_vx = get_register(cpu, instruction->dest.reg);
+        int new_val = current_val_at_vx + (instruction->src.val);
+
+        set_register(cpu,
+            instruction->dest.reg,
+            new_val
+        );
+    }
+}
+
+int get_register(CPU* cpu, Register reg)
+{
+    switch(reg) {
+        case V0: return cpu->v0;
+        case V1: return cpu->v1;
+        case V2: return cpu->v2;
+        case V3: return cpu->v3;
+        case V4: return cpu->v4;
+        case V5: return cpu->v5;
+        case V6: return cpu->v1;
+        case V7: return cpu->v7;
+        case V8: return cpu->v8;
+        case V9: return cpu->v9;
+        case VA: return cpu->va;
+        case VB: return cpu->vb;
+        case VC: return cpu->vc;
+        case VD: return cpu->vd;
+        case VE: return cpu->ve;
+        case VF: return cpu->vf;
+        case ST: return cpu->st;
+        case DT: return cpu->dt;
+        case I: return cpu->i;
+        default: return 0;
+    }
+}
+
+void set_register(CPU* cpu, Register reg, int val)
+{
+    switch(reg) {
+        case V0: cpu->v0 = val; break;
+        case V1: cpu->v1 = val; break;
+        case V2: cpu->v2 = val; break;
+        case V3: cpu->v3 = val; break;
+        case V4: cpu->v4 = val; break;
+        case V5: cpu->v5 = val; break;
+        case V6: cpu->v1 = val; break;
+        case V7: cpu->v7 = val; break;
+        case V8: cpu->v8 = val; break;
+        case V9: cpu->v9 = val; break;
+        case VA: cpu->va = val; break;
+        case VB: cpu->vb = val; break;
+        case VC: cpu->vc = val; break;
+        case VD: cpu->vd = val; break;
+        case VE: cpu->ve = val; break;
+        case VF: cpu->vf = val; break;
+        case ST: cpu->st = val; break;
+        case DT: cpu->dt = val; break;
+        case I: cpu->i = val; break;
+    }
+}
+
 void load_program_into_memory(void *program_data_segment, char *program_name)
 {
     FILE* fp;
