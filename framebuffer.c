@@ -40,8 +40,8 @@ int main()
     cpu->memory[offset] = 0x22;
     offset++;
 
-    // testing fetch_op
-    cpu->i = fetch_op(cpu);
+    // testing fetch
+    cpu->i = fetch(cpu);
 
     setup_debug_output(win);
     debug_output(win, cpu);
@@ -54,7 +54,7 @@ int main()
     offset++;
     cpu->memory[offset] = 0xff;
     offset++;
-    cpu->i = fetch_op(cpu);
+    cpu->i = fetch(cpu);
 
     decrement_dt(cpu);
     decrement_st(cpu);
@@ -145,6 +145,7 @@ void debug_output(WINDOW *win, CPU *cpu)
     mvwprintw(win, 9, 32, "MemCheck @ 0x%.2x : 0x%.2x",
         PROG_DATA_SEGMENT + 1,
         cpu->memory[PROG_DATA_SEGMENT + 1]);
+    mvwprintw(win, 11, 32, "REGCHECK: %d", (Register)4);
 
     mvwprintw(win, 30, 2, "Press any key to continue execution... ");
 

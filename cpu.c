@@ -46,7 +46,7 @@ void increment_pc(CPU *cpu)
     cpu->pc = cpu->pc + 2;
 }
 
-unsigned short fetch_op(CPU *cpu)
+unsigned short fetch(CPU *cpu)
 {
     unsigned short op = 0;
     unsigned char *pc = cpu->pc;
@@ -57,6 +57,223 @@ unsigned short fetch_op(CPU *cpu)
     op += *(pc + 1);
     increment_pc(cpu);
     return op;
+}
+
+Instruction* decode(unsigned short op_code)
+{
+    Instruction *ins = malloc(sizeof(Instruction));
+
+    if (op_code == 0x00E0) {
+        ins->op = CLS;
+    }
+    else if (op_code == 0x00EE) {
+        ins->op = RET;
+    }
+
+    // From here, we're just checking the upper most nibble to
+    // determine the instruction
+    else if ((op_code & 0x0FFF) == op_code) {
+        // (0nnn) SYS addr
+        ins->op = SYS_ADDR;
+        ins->dest.addr = op_code & 0x0FFF;
+    }
+    else if ((op_code & 0x1FFF) == op_code) {
+        // (1nnn) JP addr
+        ins->op = JP_ADDR;
+        ins->dest.addr = op_code & 0x1F;
+    }
+    else if ((op_code & 0x2FFF) == op_code) {
+        // (2nnn) CALL addr
+        ins->op = CALL_ADDR;
+        ins->dest.addr = op_code & 0x1F;
+    }
+    else if ((op_code & 0x3FFF) == op_code) {
+        // (3xkk) SE Vx, byte
+        int reg = op_code & 0x0F00;
+        int val = op_code & 0x00FF;
+
+        ins->op = SE_VX_BYTE;
+        ins->dest.reg = reg;
+        ins->src.val = val;
+    }
+    else if ((op_code & 0x4FFF) == op_code) {
+        // (4xkk) SNE Vx, byte
+        int reg = op_code & 0x0F00;
+        int val = op_code & 0x00FF;
+
+        ins->op = SNE_VX_BYTE;
+        ins->dest.reg = reg;
+        ins->src.val = val;
+    }
+    else if ((op_code & 0x5FFF) == op_code) {
+        // (5xy0) SE Vx, Vy
+        int reg1 = op_code & 0x0F00;
+        int reg2 = op_code & 0x00F0;
+
+        ins->op = SE_VX_VY;
+        ins->dest.reg = reg1;
+        ins->src.reg = reg2;
+    }
+    else if ((op_code & 0x6FFF) == op_code) {
+        // (6xkk) LD Vx, byte
+        int reg = op_code & 0x0F00;
+        int val = op_code & 0x00FF;
+
+        ins->op = LD_VX_BYTE;
+        ins->dest.reg = reg;
+        ins->src.val = val;
+    }
+    else if ((op_code & 0x7FFF) == op_code) {
+        // (7xkk) ADD Vx, byte
+        int reg = op_code & 0x0F00;
+        int addr = op_code & 0x00FF;
+
+        ins->op = ADD_VX_BYTE;
+        ins->dest.reg = reg;
+        ins->src.addr = addr;
+    }
+    else if ((op_code & 0x8FFF) == op_code) {
+        if ((op_code & 0xFFF0) == op_code) {
+            // (8xy0) LD Vx, Vy
+            ins->op = LD_VX_VY;
+        }
+        else if ((op_code & 0xFFF1) == op_code) {
+            // (8xy1) OR Vx, Vy
+            ins->op = OR_VX_VY;
+        }
+        else if ((op_code & 0xFFF2) == op_code) {
+            // (8xy2) AND Vx, Vy
+            ins->op = AND_VX_VY;
+        }
+        else if ((op_code & 0xFFF3) == op_code) {
+            // (8xy3) XOR Vx, Vy
+            ins->op = XOR_VX_VY;
+        }
+        else if ((op_code & 0xFFF4) == op_code) {
+            // (8xy4) ADD Vx, Vy
+            ins->op = ADD_VX_VY;
+        }
+        else if ((op_code & 0xFFF5) == op_code) {
+            // (8xy5) SUB Vx, Vy
+            ins->op = SUB_VX_VY;
+        }
+        else if ((op_code & 0xFFF6) == op_code) {
+            // (8xy6) SHR Vx, Vy
+            ins->op = SHR_VX_VY;
+        }
+        else if ((op_code & 0xFFF7) == op_code) {
+            // (8xy7) SUBN Vx, Vy
+            ins->op = SUBN_VX_VY;
+        }
+        else if ((op_code & 0xFFFE) == op_code) {
+            // (8xyE) SHL Vx, Vy
+            ins->op = SHL_VX_VY;
+        }
+
+        // for all of these op_codes, they all work with
+        // two registers; it's just determining which op
+        int reg1 = op_code & 0x0F00;
+        int reg2 = op_code & 0x00F0;
+
+        ins->dest.reg = reg1;
+        ins->src.reg = reg2;
+    }
+    else if ((op_code & 0x9FF0) == op_code) {
+        // (9xy0) SNE Vx, Vy
+        int reg1 = op_code & 0x0F00;
+        int reg2 = op_code & 0x00F0;
+
+        ins->op = SNE_VX_VY;
+        ins->dest.reg = reg1;
+        ins->src.reg = reg2;
+    }
+    else if ((op_code & 0xAFFF) == op_code) {
+        // (Annn) LD I, addr
+        int addr = op_code & 0x0FFF;
+
+        ins->op = LD_ADDR;
+        ins->dest.addr = addr;
+    }
+    else if ((op_code & 0xBFFF) == op_code) {
+        // (Bnnn) JP V0, addr
+        int addr = op_code;
+
+        ins->op = JP_ADDR;
+        ins->dest.addr = addr;
+    }
+    else if ((op_code & 0xCFFF) == op_code) {
+        // (Cxkk) RND Vx, byte
+        int reg = op_code & 0x0F00;
+        int val = op_code & 0x00FF;
+
+        ins->op = RND_VX_BYTE;
+        ins->dest.reg = reg;
+        ins->src.val = val;
+    }
+    else if ((op_code & 0xDFFF) == op_code) {
+        // (Dxyn) DRW Vx, Vy, nibble
+        int reg1 = op_code & 0x0F00;
+        int reg2 = op_code & 0x00F0;
+        int val = op_code & 0x000F;
+
+        ins->op = DRW_VX_VY_NIB;
+        ins->dest.reg = reg1;
+        ins->src.reg = reg2;
+        ins->extra_operand.val = val;
+    }
+    else if ((op_code & 0xEFFF) == op_code) {
+        // (Ex9E) SKP Vx
+        if ((op_code & 0xEF9E) == op_code) {
+            ins->op = SKP_VX;
+        }
+        // (ExA1) SKNP Vx
+        else if ((op_code & 0xEFA1) == op_code) {
+            ins->op = SKNP_VX;
+        }
+
+        int reg1 = op_code & 0x0F00;
+        ins->dest.reg = reg1;
+    }
+    else if ((op_code & 0xFFFF) == op_code) {
+        if ((op_code & 0xFF07) == op_code) {
+            // (Fx07) LD Vx, DT
+            ins->op = LD_VX_DT;
+        }
+        else if ((op_code & 0xFF0A) == op_code) {
+            // (Fx0A) LD Vx, K
+            ins->op = LD_VX_K;
+        }
+        else if ((op_code & 0xFF15) == op_code) {
+            // (Fx15) LD DT, Vx
+            ins->op = LD_DT_VX;
+        }
+        else if ((op_code & 0xFF18) == op_code) {
+            // (Fx18) LD ST, Vx
+            ins->op = LD_ST_VX;
+        }
+        else if ((op_code & 0xFF1E) == op_code) {
+            // (Fx1E) ADD I, Vx
+            ins->op = ADD_I_VX;
+        }
+        else if ((op_code & 0xFF29) == op_code) {
+            // (Fx29) LD F, Vx
+            ins->op = LD_F_VX;
+        }
+        else if ((op_code & 0xFF33) == op_code) {
+            // (Fx33) LD B, Vx
+            ins->op = LD_B_VX;
+        }
+        else if ((op_code & 0xFF55) == op_code) {
+            // (Fx55) LD [I], Vx
+            ins->op = LD_I_VX;
+        }
+        else if ((op_code & 0xFF0A) == op_code) {
+            // (Fx65) LD Vx, [I]
+            ins->op = LD_VX_I;
+        }
+    }
+
+    return ins;
 }
 
 void load_program_into_memory(void *program_data_segment, char *program_name)
@@ -72,3 +289,4 @@ void load_program_into_memory(void *program_data_segment, char *program_name)
     fread((unsigned char*)program_data_segment, file_len, 1, fp);
     fclose(fp);
 }
+

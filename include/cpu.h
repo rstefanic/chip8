@@ -4,25 +4,42 @@
 #include "stack.h"
 
 typedef enum {
+    SYS_ADDR,
     CLS,
     RET,
-    JP,
-    CALL,
-    SE,
-    SNE,
-    LD,
-    ADD,
-    OR,
-    AND,
-    XOR,
-    SUB,
-    SHR,
-    SUBN,
-    SHL,
-    RND,DRW,
-    SKP,
-    SKNP
-} OP_CODE;
+    JP_ADDR,
+    CALL_ADDR,
+    SE_VX_BYTE,
+    SNE_VX_BYTE,
+    SE_VX_VY,
+    LD_VX_BYTE,
+    ADD_VX_BYTE,
+    LD_VX_VY,
+    OR_VX_VY,
+    AND_VX_VY,
+    XOR_VX_VY,
+    ADD_VX_VY,
+    SUB_VX_VY,
+    SHR_VX_VY,
+    SUBN_VX_VY,
+    SHL_VX_VY,
+    SNE_VX_VY,
+    LD_ADDR,
+    JP_V0_ADDR,
+    RND_VX_BYTE,
+    DRW_VX_VY_NIB,
+    SKP_VX,
+    SKNP_VX,
+    LD_VX_DT,
+    LD_VX_K,
+    LD_DT_VX,
+    LD_ST_VX,
+    ADD_I_VX,
+    LD_F_VX,
+    LD_B_VX,
+    LD_I_VX,
+    LD_VX_I
+} Op;
 
 typedef enum {
     V0, V1, V2, V3, V4, V5, V6, V7, V8, V9,
@@ -31,32 +48,16 @@ typedef enum {
 
 typedef union {
     Register reg;
-    int immediate_value;
+    int val;
+    short addr;
 } Operand;
 
-typedef Operand Destination;
-typedef Operand Source;
-
 typedef struct {
-    OP_CODE op;
-} SingleOp;
-
-typedef struct {
-    OP_CODE op;
-    Destination dest;
-} OpWithDest;
-
-typedef struct {
-    OP_CODE op;
-    Destination dest;
-    Source src;
-} OpWithDestAndSrc;
-
-union Op {
-    SingleOp op;
-    OpWithDest op_with_dest;
-    OpWithDestAndSrc op_with_dest_and_src;
-};
+    Op op;
+    Operand dest;
+    Operand src;
+    Operand extra_operand;
+} Instruction;
 
 typedef char SoundTimer;
 
@@ -94,5 +95,5 @@ typedef struct {
 CPU *new_cpu();
 void decrement_st(CPU *cpu);
 void decrement_dt(CPU *cpu);
-unsigned short fetch_op(CPU *cpu);
+unsigned short fetch(CPU *cpu);
 void load_program_into_memory(void *program_data_segment, char *program_name);
