@@ -1,8 +1,9 @@
 all: build run
 
-OBJS = framebuffer.c \
-	stack.c \
+OBJS = chip8.c \
 	cpu.c \
+	framebuffer.c \
+	stack.c \
 	bcd.c \
 	rng.c
 

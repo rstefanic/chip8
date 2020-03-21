@@ -1,6 +1,7 @@
+#ifndef FRAMEBUFFER_H
+#define FRAMEBUFFER_H
+
 #include "chip8.h"
-#include "cpu.h"
-#include "font.h"
 
 #define TOTAL_FRAMEBUFFER_SIZE FRAME_WIDTH * FRAME_HEIGHT
 
@@ -8,11 +9,8 @@ typedef struct {
     char buffer[FRAME_WIDTH * FRAME_HEIGHT];
 } Framebuffer;
 
-
+Framebuffer* new_framebuffer();
 void draw_buffer(Framebuffer *fb);
 void clear_buffer(Framebuffer *fb);
 
-#if DEBUG
-void setup_debug_output(WINDOW *win);
-void debug_output(WINDOW *win, CPU *cpu);
-#endif
+#endif /* FRAMEBUFFER_H not defined */
