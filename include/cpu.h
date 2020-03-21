@@ -1,6 +1,9 @@
-#include <stdlib.h>
+#ifndef CPU_H
+#define CPU_H
 
 #include "chip8.h"
+#include "framebuffer.h"
+#include "rng.h"
 #include "stack.h"
 
 typedef enum {
@@ -63,7 +66,10 @@ typedef char SoundTimer;
 
 typedef struct {
     // Contains the stack + stack pointer
-    Stack* stack;
+    Stack *stack;
+
+    // Framebuffer for output
+    Framebuffer *fb;
 
     // 0xFFF is the size of the memory
     // 0x000 to 0x080: reserved for font
@@ -101,3 +107,9 @@ void execute(CPU* cpu, Instruction* instruction);
 int get_register(CPU* cpu, Register reg);
 void set_register(CPU* cpu, Register reg, int val);
 void load_program_into_memory(void *program_data_segment, char *program_name);
+
+#if DEBUG
+char* get_op_string(Op op);
+#endif
+
+#endif /* CPU_H not defined */

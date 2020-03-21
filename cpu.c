@@ -1,9 +1,23 @@
 #include "cpu.h"
+#include "font.h"
 
-CPU *new_cpu() 
+CPU *new_cpu(char* program_name)
 {
     CPU *cpu;
     cpu = (CPU*)malloc(sizeof(CPU)); 
+
+    /* CHIP-8 interpreter is preloaded with sprite data of the 16 hex digits */
+    /* The exact memory adddresses where this resides is unspeicifed, but
+     * it must be lower than address 0x200 (the PROG_DATA_SEGMENT)
+     */
+    unsigned char* mem = &(cpu->memory[0]);
+    memcpy(mem, &(font[0][0]), 16 * 5);
+
+    // Load the name of the file that contains our program into memory
+    void *program_data_segment_start = &(cpu->memory[PROG_DATA_SEGMENT]);
+    load_program_into_memory(program_data_segment_start, program_name);
+
+    // Set all the registers to 0
     cpu->v0 = 0;
     cpu->v1 = 0;
     cpu->v2 = 0;
@@ -22,10 +36,15 @@ CPU *new_cpu()
     cpu->vf = 0;
     cpu->st = 0;
     cpu->dt = 0;
-    cpu->pc = 0;
+    cpu->pc = &(cpu->memory[PROG_DATA_SEGMENT]);
     cpu->i = 0;
 
+    // Setup new stack and frame buffer
     cpu->stack = new_stack();
+    cpu->fb = new_framebuffer();
+
+    // initalize the RNG module
+    initialize_rng();
 
     return cpu;
 }
@@ -129,7 +148,9 @@ Instruction* decode(unsigned short op_code)
         int addr = op_code & 0x00FF;
 
         ins->op = ADD_VX_BYTE;
-        ins->dest.reg = reg;
+        // shift 8 bits because I want the lower nibble in
+        // the least significant nibble
+        ins->dest.reg = reg >> TWO_NIBBLES;
         ins->src.addr = addr;
     }
     else if ((op_code & 0x8FFF) == op_code) {
@@ -280,14 +301,26 @@ void execute(CPU* cpu, Instruction* instruction)
 {
     Op op = instruction->op;
 
-    if (op == ADD_VX_BYTE) {
-        int current_val_at_vx = get_register(cpu, instruction->dest.reg);
-        int new_val = current_val_at_vx + (instruction->src.val);
+    switch(op) {
+        case CLS: {
+            break;
+        }
+        case RND_VX_BYTE: {
+            int rand = rng();
+            int new_val = rand & (instruction->src.val);
 
-        set_register(cpu,
-            instruction->dest.reg,
-            new_val
-        );
+            set_register(cpu, instruction->dest.reg, new_val);
+            break;
+        }
+        case ADD_VX_BYTE: {
+            int current_val_at_vx = get_register(cpu, instruction->dest.reg);
+            int new_val = current_val_at_vx + (instruction->src.val);
+
+            set_register(cpu, instruction->dest.reg, new_val);
+            break;
+        }
+        default:
+            break;
     }
 }
 
@@ -356,3 +389,46 @@ void load_program_into_memory(void *program_data_segment, char *program_name)
     fclose(fp);
 }
 
+#if DEBUG
+char* get_op_string(Op op)
+{
+    switch(op) {
+        case SYS_ADDR: return "SYS_ADDR";
+        case CLS: return "CLS";
+        case RET: return "RET";
+        case JP_ADDR: return "JP_ADDR";
+        case CALL_ADDR: return "CALL_ADDR";
+        case SE_VX_BYTE: return "SE_VX_BYTE";
+        case SNE_VX_BYTE: return "SNE_VX_BYTE";
+        case SE_VX_VY: return "SE_VX_VY";
+        case LD_VX_BYTE: return "LD_VX_BYTE";
+        case ADD_VX_BYTE: return "ADD_VX_BYTE";
+        case LD_VX_VY: return "LD_VX_VY";
+        case OR_VX_VY: return "OR_VX_VY";
+        case AND_VX_VY: return "AND_VX_VY";
+        case XOR_VX_VY: return "XOR_VX_VY";
+        case ADD_VX_VY: return "ADD_VX_VY";
+        case SUB_VX_VY: return "SUB_VX_VY";
+        case SHR_VX_VY: return "SHR_VX_VY";
+        case SUBN_VX_VY: return "SUBN_VX_VY";
+        case SHL_VX_VY: return "SHL_VX_VY";
+        case SNE_VX_VY: return "SNE_VX_VY";
+        case LD_ADDR: return "LD_ADDR";
+        case JP_V0_ADDR: return "JP_V0_ADDR";
+        case RND_VX_BYTE: return "RND_VX_BYTE";
+        case DRW_VX_VY_NIB: return "DRW_VX_VY_NIB";
+        case SKP_VX: return "SKNP_VX";
+        case SKNP_VX: return "SKNP_VX";
+        case LD_VX_DT: return "LD_VX_DT";
+        case LD_VX_K: return "LD_VX_K";
+        case LD_DT_VX: return "LD_DT_VX";
+        case LD_ST_VX: return "LD_ST_VX";
+        case ADD_I_VX: return "ADD_I_VX";
+        case LD_F_VX: return "LD_F_VX";
+        case LD_B_VX: return "LD_B_VX";
+        case LD_I_VX: return "LD_I_VX";
+        case LD_VX_I: return "LD_VX_I";
+        default: return "UNKNOWN OP";
+    }
+}
+#endif
