@@ -1,3 +1,6 @@
+#ifndef RNG_H
+#define RNG_H
+
 #include "chip8.h"
 
 /* The random number generator is used for a 
@@ -7,3 +10,5 @@
 
 void initialize_rng();
 short rng();
+
+#endif /* RNG_H not defined */

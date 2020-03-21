@@ -1,3 +1,6 @@
+#ifndef STACK_H
+#define STACK_H
+
 #include "chip8.h"
 
 typedef struct {
@@ -8,3 +11,5 @@ typedef struct {
 Stack* new_stack();
 char pop(Stack *stack);
 void push(Stack *stack, char val);
+
+#endif /* STACK_H not defined */
