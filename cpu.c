@@ -389,7 +389,6 @@ void load_program_into_memory(void *program_data_segment, char *program_name)
     fclose(fp);
 }
 
-#if DEBUG
 char* get_op_string(Op op)
 {
     switch(op) {
@@ -431,4 +430,3 @@ char* get_op_string(Op op)
         default: return "UNKNOWN OP";
     }
 }
-#endif

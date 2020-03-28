@@ -108,8 +108,6 @@ int get_register(CPU* cpu, Register reg);
 void set_register(CPU* cpu, Register reg, int val);
 void load_program_into_memory(void *program_data_segment, char *program_name);
 
-#if DEBUG
 char* get_op_string(Op op);
-#endif
 
 #endif /* CPU_H not defined */
