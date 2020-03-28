@@ -1,15 +1,33 @@
 #include "chip8.h"
 #include "cpu.h"
 
-#if DEBUG
 char debug_print[64];
 void setup_debug_output(WINDOW *win);
 void debug_output(WINDOW *win, CPU *cpu);
-#endif
 
-int main()
+int main(int argc, char** argv)
 {
-    CPU *cpu = new_cpu("./roms/add.ch8");
+    int debug = 0;
+    int argp = 1;
+
+    if (argc < 2 || argc > 3) {
+        printf(INVALID_ARG_MSG);
+        return -1;
+    }
+
+    if (strcmp(argv[argp], DEBUG_ARG_FLAG) == 0) {
+         debug = 1;
+         getch();
+         argp++;
+    }
+
+    if (argv[argp] == NULL) {
+        printf(INVALID_ARG_MSG);
+        return -1;
+    }
+
+    const char * const program_name = argv[argp];
+    CPU *cpu = new_cpu(program_name);
 
     initscr(); // set up memory and clears the screen for ncurses
 
@@ -24,37 +42,39 @@ int main()
 
     WINDOW *win = newwin(FRAME_HEIGHT, FRAME_WIDTH, start_y, start_x);
 
-#if DEBUG
-    setup_debug_output(win);
-    debug_output(win, cpu);
-    getch();
-
-    // fetch, decode, execute
-    int i = 0;
-
-    sprintf(debug_print, "i: %d", i);
-    debug_output(win, cpu);
-    getch();
-
-    do {
-        cpu->i = fetch(cpu);
-        Instruction* ins = decode(cpu->i);
-        execute(cpu, ins);
-
-        sprintf(debug_print, "Current Instruction: [%s]", get_op_string(ins->op));
-        free(ins);
+    if (debug) {
+        setup_debug_output(win);
         debug_output(win, cpu);
         getch();
-        i++;
-    } while(i < 10);
-    
-#else
-    box(win, 0, 0);
-    mvwprintw(win, 1, 1, "CHIP8");
-    wrefresh(win);
-    getch();
-#endif
 
+        // fetch, decode, execute
+        int i = 0;
+
+        sprintf(debug_print, "i: %d", i);
+        debug_output(win, cpu);
+        getch();
+
+        do {
+            cpu->i = fetch(cpu);
+            Instruction* ins = decode(cpu->i);
+            execute(cpu, ins);
+
+            sprintf(debug_print, "Current Instruction: [%s]", get_op_string(ins->op));
+            free(ins);
+            debug_output(win, cpu);
+            getch();
+            i++;
+        } while(i < 10);
+    }
+    else {
+        box(win, 0, 0);
+        mvwprintw(win, 1, 1, "CHIP8");
+        wrefresh(win);
+        getch();
+    }
+
+
+    // Teardown
     endwin(); // exists ncurses
 
     // Clean up CPU
@@ -65,7 +85,6 @@ int main()
     return 0;
 }
 
-#if DEBUG
 void setup_debug_output(WINDOW *win)
 {
     box(win, 0, 0);
@@ -126,4 +145,3 @@ void debug_output(WINDOW *win, CPU *cpu)
     refresh();
     wrefresh(win);
 }
-#endif

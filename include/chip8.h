@@ -21,4 +21,8 @@
 #define ONE_NIBBLE 4
 #define TWO_NIBBLES 8
 
+/* Constant Strings */
+#define INVALID_ARG_MSG "ERR: Emulator requires a program to load"
+#define DEBUG_ARG_FLAG "-d"
+
 #endif /* CHIP8_H not defined */
