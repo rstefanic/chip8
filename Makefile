@@ -1,43 +1,29 @@
-all: build run
-
-OBJS = chip8.c \
-	cpu.c \
-	framebuffer.c \
-	stack.c \
-	bcd.c \
-	rng.c
+all: build debug
 
 CC = gcc
 CFLAGS = -Wall -Wextra
 TERMINAL = gnome-terminal
 NCURSES = -lncurses
 INCLUDE = -Iinclude
-DEBUG = -DDEBUG=1
+DEBUG = -d
+TESTROM = ./roms/test.ch8
 
-build-debug:
-	$(CC) \
-	$(CFLAGS) \
-	$(INCLUDE) \
-	$(OBJS) \
-	$(NCURSES) \
-	$(DEBUG) \
-	-o chip8-debug
+SRC = $(wildcard *.c)
+OBJS = $(SRC:%.c=obj/%.o)
 
-build:
-	$(CC) \
-	$(CFLAGS) \
-	$(INCLUDE) \
-	$(OBJS) \
-	$(NCURSES) \
-	-o chip8
+obj/%.o: %.c
+	$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@
 
-run-debug:
+build: $(OBJS)
+	$(CC) $(CFLAGS) $(OBJS) $(NCURSES) -o chip8
+
+debug:
 	$(TERMINAL) \
 	--profile \
 	--working-directory="$(CURDIR)" \
 	--geometry=64x32 \
 	--title=CHIP8 \
-	-- "./chip8-debug" \
+	-- "./chip8" $(DEBUG) $(TESTROM) \
 
 run:
 	$(TERMINAL) \
@@ -45,7 +31,8 @@ run:
 	--working-directory="$(CURDIR)" \
 	--geometry=64x32 \
 	--title=CHIP8 \
-	-- "./chip8" \
+	-- "./chip8" $(TESTROM) \
 
 clean:
-	rm chip8
+	rm -rf obj/*.o
+	rm -f chip8
