@@ -29,6 +29,11 @@ int main(int argc, char** argv)
     const char * const program_name = argv[argp];
     CPU *cpu = new_cpu(program_name);
 
+    if (cpu == NULL) {
+        printf(COULD_NOT_ALLOCATE_CPU_MEM);
+        return -1;
+    }
+
     initscr(); // set up memory and clears the screen for ncurses
 
     /* Put the terminal into raw mode; characters typed are immediately
@@ -57,6 +62,12 @@ int main(int argc, char** argv)
         do {
             cpu->i = fetch(cpu);
             Instruction* ins = decode(cpu->i);
+
+            if (ins == NULL) {
+                printf("ERR: could not allocate memory for instruction");
+                return -1;
+            }
+
             execute(cpu, ins);
 
             sprintf(debug_print, "Current Instruction: [%s]", get_op_string(ins->op));

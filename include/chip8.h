@@ -23,6 +23,7 @@
 
 /* Constant Strings */
 #define INVALID_ARG_MSG "ERR: Emulator requires a program to load"
+#define COULD_NOT_ALLOCATE_CPU_MEM "ERR: Could not allocate CPU memory"
 #define DEBUG_ARG_FLAG "-d"
 
 #endif /* CHIP8_H not defined */
