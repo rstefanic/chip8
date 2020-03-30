@@ -39,7 +39,7 @@ CPU *new_cpu(char* program_name)
     cpu->vf = 0;
     cpu->st = 0;
     cpu->dt = 0;
-    cpu->pc = &(cpu->memory[PROG_DATA_SEGMENT]);
+    cpu->pc = PROG_DATA_SEGMENT;
     cpu->i = 0;
 
     // Setup new stack and frame buffer
@@ -78,12 +78,13 @@ void increment_pc(CPU *cpu)
 unsigned short fetch(CPU *cpu)
 {
     unsigned short op = 0;
-    unsigned char *pc = cpu->pc;
+    unsigned int pc = cpu->pc;
+    unsigned char* memory_location = (cpu->memory + pc);
 
     // Shifted over 8 bits because
     // the instructions are 16-bit
-    op = (*pc) << BYTE_SIZE;
-    op += *(pc + 1);
+    op = (*memory_location) << BYTE_SIZE;
+    op += *(memory_location + 1);
     increment_pc(cpu);
     return op;
 }

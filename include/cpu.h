@@ -94,7 +94,7 @@ typedef struct {
     unsigned char vf;
     unsigned char st;
     unsigned char dt;
-    unsigned char *pc;
+    unsigned int pc;
     unsigned short i;
 } CPU;
 
