@@ -13,12 +13,12 @@ Stack* new_stack()
     return stack;
 }
 
-char pop(Stack *stack)
+unsigned int pop(Stack *stack)
 {
     return stack->buffer[(stack->sp)--];
 }
 
-void push(Stack *stack, char val)
+void push(Stack *stack, unsigned int val)
 {
     stack->buffer[stack->sp] = val;
     (stack->sp)++;
