@@ -5,6 +5,9 @@ CPU *new_cpu(char* program_name)
 {
     CPU *cpu;
     cpu = (CPU*)malloc(sizeof(CPU)); 
+    if (cpu == NULL) {
+        return NULL;
+    }
 
     /* CHIP-8 interpreter is preloaded with sprite data of the 16 hex digits */
     /* The exact memory adddresses where this resides is unspeicifed, but
@@ -41,7 +44,14 @@ CPU *new_cpu(char* program_name)
 
     // Setup new stack and frame buffer
     cpu->stack = new_stack();
+    if (cpu->stack == NULL) {
+        return NULL;
+    }
+
     cpu->fb = new_framebuffer();
+    if (cpu->fb == NULL) {
+        return NULL;
+    }
 
     // initalize the RNG module
     initialize_rng();
@@ -81,6 +91,10 @@ unsigned short fetch(CPU *cpu)
 Instruction* decode(unsigned short op_code)
 {
     Instruction *ins = malloc(sizeof(Instruction));
+
+    if (ins == NULL) {
+        return NULL;
+    }
 
     if (op_code == 0x00E0) {
         ins->op = CLS;

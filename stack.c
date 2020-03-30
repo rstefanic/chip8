@@ -4,6 +4,11 @@ Stack* new_stack()
 {
     Stack *stack;
     stack = (Stack*)malloc(sizeof(Stack));
+
+    if (stack == NULL) {
+        return NULL;
+    }
+
     stack->sp = 0;
     return stack;
 }
