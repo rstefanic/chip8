@@ -340,11 +340,39 @@ void execute(CPU* cpu, Instruction* instruction)
             cpu->pc = subroutine_addr;
             break;
         }
-        case RND_VX_BYTE: {
-            int rand = rng();
-            int new_val = rand & (instruction->src.val);
+        case SE_VX_BYTE: {
+            int vx = get_register(cpu, instruction->dest.reg);
+            int comparison_val = instruction->src.val;
 
-            set_register(cpu, instruction->dest.reg, new_val);
+            // If they're equal, skip the next instruction
+            if (vx == comparison_val) {
+                increment_pc(cpu);
+            }
+            break;
+        }
+        case SNE_VX_BYTE: {
+            int vx = get_register(cpu, instruction->dest.reg);
+            int comparison_val = instruction->src.val;
+
+            // If they're not equal, skip the next instruction
+            if (vx != comparison_val) {
+                increment_pc(cpu);
+            }
+            break;
+        }
+        case SE_VX_VY: {
+            int vx = get_register(cpu, instruction->dest.reg);
+            int vy = get_register(cpu, instruction->src.reg);
+
+            if (vx == vy) {
+                increment_pc(cpu);
+            }
+            break;
+        }
+        case LD_VX_BYTE: {
+            int val = instruction->src.val;
+            set_register(cpu, instruction->dest.reg, val);
+
             break;
         }
         case ADD_VX_BYTE: {
@@ -352,6 +380,96 @@ void execute(CPU* cpu, Instruction* instruction)
             int new_val = current_val_at_vx + (instruction->src.val);
 
             set_register(cpu, instruction->dest.reg, new_val);
+            break;
+        }
+        case LD_VX_VY: {
+            int vy = get_register(cpu, instruction->src.reg);
+            set_register(cpu, instruction->dest.reg, vy);
+            break;
+        }
+        case OR_VX_VY: {
+            int vx = get_register(cpu, instruction->dest.reg);
+            int vy = get_register(cpu, instruction->src.reg);
+
+            int result = vx | vy;
+            set_register(cpu, instruction->dest.reg, result);
+            break;
+        }
+        case AND_VX_VY: {
+            int vx = get_register(cpu, instruction->dest.reg);
+            int vy = get_register(cpu, instruction->src.reg);
+
+            int result = vx & vy;
+            set_register(cpu, instruction->dest.reg, result);
+            break;
+        }
+        case XOR_VX_VY: {
+            int vx = get_register(cpu, instruction->dest.reg);
+            int vy = get_register(cpu, instruction->src.reg);
+
+            int result = vx ^ vy;
+            set_register(cpu, instruction->dest.reg, result);
+            break;
+        }
+        case ADD_VX_VY: {
+            int vx = get_register(cpu, instruction->dest.reg);
+            int vy = get_register(cpu, instruction->src.reg);
+
+            int result = vx + vy;
+            set_register(cpu, instruction->dest.reg, result);
+            break;
+        }
+        case SUB_VX_VY: {
+            int vx = get_register(cpu, instruction->dest.reg);
+            int vy = get_register(cpu, instruction->src.reg);
+
+            int result = vx - vy;
+            set_register(cpu, instruction->dest.reg, result);
+            break;
+        }
+        case SHR_VX_VY: {
+            int vx = get_register(cpu, instruction->dest.reg);
+
+            // Set VF based on whether or not the LSB on VX is set
+            set_register(cpu, VF, (vx & 1));
+
+            int result = vx >> 1;
+            set_register(cpu, instruction->dest.reg, result);
+            break;
+        }
+        case SUBN_VX_VY: {
+            int vx = get_register(cpu, instruction->dest.reg);
+            int vy = get_register(cpu, instruction->src.reg);
+
+            // TODO(robert): revisit VF = NOT borrow
+            int result = vy - vx;
+            set_register(cpu, instruction->dest.reg, result);
+            break;
+        }
+        case SHL_VX_VY: {
+            int vx = get_register(cpu, instruction->dest.reg);
+
+            // Set VF based on whether or not the MSB on VX is set
+            set_register(cpu, VF, (vx & 0x40));
+
+            int result = vx << 1;
+            set_register(cpu, instruction->dest.reg, result);
+            break;
+        }
+        case SNE_VX_VY: {
+            int vx = get_register(cpu, instruction->dest.reg);
+            int vy = get_register(cpu, instruction->src.reg);
+
+            if (vx != vy) {
+                increment_pc(cpu);
+            }
+            break;
+        }
+        case RND_VX_BYTE: {
+            int rand = rng();
+            int val = rand & (instruction->src.val);
+
+            set_register(cpu, instruction->dest.reg, val);
             break;
         }
         default:
