@@ -320,6 +320,26 @@ void execute(CPU* cpu, Instruction* instruction)
         case CLS: {
             break;
         }
+        case RET: {
+            int ret_address = pop(cpu->stack);
+            cpu->pc = ret_address;
+            break;
+        }
+        case JP_ADDR: {
+            int addr = instruction->dest.addr;
+            cpu->pc = addr;
+            break;
+        }
+        case CALL_ADDR: {
+            // push the current location onto the stack
+            unsigned int ret_address = cpu->pc;
+            push(cpu->stack, ret_address);
+
+            // jump to subroutine location
+            unsigned int subroutine_addr = instruction->dest.addr;
+            cpu->pc = subroutine_addr;
+            break;
+        }
         case RND_VX_BYTE: {
             int rand = rng();
             int new_val = rand & (instruction->src.val);
