@@ -1,6 +1,7 @@
 #ifndef CPU_H
 #define CPU_H
 
+#include "bcd.h"
 #include "chip8.h"
 #include "framebuffer.h"
 #include "rng.h"
