@@ -307,6 +307,9 @@ Instruction* decode(unsigned short op_code)
             // (Fx65) LD Vx, [I]
             ins->op = LD_VX_I;
         }
+
+        int reg1 = op_code & 0x0F00;
+        ins->dest.reg = reg1;
     }
 
     return ins;
@@ -465,11 +468,121 @@ void execute(CPU* cpu, Instruction* instruction)
             }
             break;
         }
+        case LD_ADDR: {
+            int addr = instruction->dest.addr;
+            cpu->i = addr;
+            break;
+        }
+        case JP_V0_ADDR: {
+            int v0 = get_register(cpu, V0);
+            int addr = instruction->dest.addr;
+
+            cpu->pc = addr + v0;
+            break;
+        }
         case RND_VX_BYTE: {
             int rand = rng();
             int val = rand & (instruction->src.val);
 
             set_register(cpu, instruction->dest.reg, val);
+            break;
+        }
+        case DRW_VX_VY_NIB: {
+            // Implement the draw function on the framebuffer
+            break;
+        }
+        case SKP_VX: {
+            // int vx = get_register(cpu, instruction->dest.reg);
+
+            // check if the key with the value of VX is
+            // being pressed.
+
+            // if it is,
+            // increment PC by 2.
+            break;
+        }
+        case SKNP_VX: {
+            // int vx = get_register(cpu, instruction->dest.reg);
+
+            // check if the key with the value of VX is
+            // NOT being pressed.
+
+            // if it is NOT,
+            // increment PC by 2.
+            break;
+        }
+        case LD_VX_DT: {
+            int dt = cpu->dt;
+            set_register(cpu, instruction->dest.reg, dt);
+            break;
+        }
+        case LD_VX_K: {
+            // wait for a keypress, and store it in vx
+            break;
+        }
+        case LD_DT_VX: {
+            int vx = get_register(cpu, instruction->dest.reg);
+            set_register(cpu, DT, vx);
+            break;
+        }
+        case LD_ST_VX: {
+            int vx = get_register(cpu, instruction->dest.reg);
+            set_register(cpu, ST, vx);
+            break;
+        }
+        case ADD_I_VX: {
+            int i = cpu->i;
+            int vx = get_register(cpu, instruction->dest.reg);
+            int result = i + vx;
+
+            set_register(cpu, I, result);
+            break;
+        }
+        case LD_F_VX: {
+            int vx = get_register(cpu, instruction->dest.reg);
+
+            // We just need to multiply 5 by VX in order to get
+            // this value. This is because all the font data
+            // is stored in the first 80 bytes of memory.
+            int result = vx * 5;
+
+            set_register(cpu, I, result);
+            break;
+        }
+        case LD_B_VX: {
+            int vx = get_register(cpu, instruction->dest.reg);
+            int i = cpu->i;
+
+            cpu->memory[i] = bcd_hundreds_at(vx);
+            cpu->memory[i + 1] = bcd_tens_at(vx);
+            cpu->memory[i + 2] = bcd_ones_at(vx);
+            break;
+        }
+        case LD_I_VX: {
+            Register vx = instruction->dest.reg;
+            int i = cpu->i;
+
+            // Loop through the registers storing
+            // them into Memory[I] from V0 to VX
+            for (Register r = V0; r <= vx; r++) {
+                cpu->memory[i] = get_register(cpu, r);
+                i++;
+            }
+
+            break;
+        }
+        case LD_VX_I: {
+            Register vx = instruction->dest.reg;
+            int i = cpu->i;
+
+            // Fills V0 to VX with values from memory
+            // starting at address I.
+            for (Register r = V0; r <= vx; r++) {
+                int value = cpu->memory[i];
+                set_register(cpu, r, value);
+                i++;
+            }
+
             break;
         }
         default:
