@@ -321,6 +321,7 @@ void execute(CPU* cpu, Instruction* instruction)
 
     switch(op) {
         case CLS: {
+            clear_buffer(cpu->fb);
             break;
         }
         case RET: {
