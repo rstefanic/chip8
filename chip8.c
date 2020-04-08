@@ -4,6 +4,7 @@
 char debug_print[64];
 void setup_debug_output(WINDOW *win);
 void debug_output(WINDOW *win, CPU *cpu);
+int valid_keyboard_input(char c);
 
 int main(int argc, char** argv)
 {
@@ -86,6 +87,9 @@ int main(int argc, char** argv)
         while (1) {
             if ((c = getch()) == ERR) {
                 mvwprintw(win, 1, 1, "No user response");
+            }
+            else if (!valid_keyboard_input(c)) {
+                mvwprintw(win, 1, 1, "Invlaid input");
             }
             else {
                 mvwprintw(win, 1, 1, "%c", c);
@@ -177,4 +181,29 @@ void debug_output(WINDOW *win, CPU *cpu)
 
     refresh();
     wrefresh(win);
+}
+
+int valid_keyboard_input(char c)
+{
+    switch(c) {
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case 'q':
+        case 'w':
+        case 'e':
+        case 'r':
+        case 'a':
+        case 's':
+        case 'd':
+        case 'f':
+        case 'z':
+        case 'x':
+        case 'c':
+        case 'v':
+            return 1;
+        default:
+            return 0;
+    }
 }
