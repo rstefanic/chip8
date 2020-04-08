@@ -61,12 +61,12 @@ CPU *new_cpu(char* program_name)
 
 void decrement_st(CPU *cpu)
 {
-    cpu->dt--;
+    cpu->st--;
 }
 
 void decrement_dt(CPU *cpu)
 {
-    cpu->st--;
+    cpu->dt--;
 }
 
 void increment_pc(CPU *cpu)
