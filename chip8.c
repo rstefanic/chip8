@@ -92,6 +92,7 @@ int main(int argc, char** argv)
                 mvwprintw(win, 1, 1, "Invlaid input");
             }
             else {
+                set_keypress(cpu, c);
                 mvwprintw(win, 1, 1, "%c", c);
             }
 
