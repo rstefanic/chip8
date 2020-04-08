@@ -20,7 +20,7 @@ CPU *new_cpu(char* program_name)
     void *program_data_segment_start = &(cpu->memory[PROG_DATA_SEGMENT]);
     load_program_into_memory(program_data_segment_start, program_name);
 
-    cpu->key = 0;
+    cpu->keypress = 0;
 
     // Set all the registers to 0
     cpu->v0 = 0;
@@ -500,23 +500,19 @@ void execute(CPU* cpu, Instruction* instruction)
             break;
         }
         case SKP_VX: {
-            // int vx = get_register(cpu, instruction->dest.reg);
+            int vx = get_register(cpu, instruction->dest.reg);
 
-            // check if the key with the value of VX is
-            // being pressed.
-
-            // if it is,
-            // increment PC by 2.
+            if (vx == cpu->keypress) {
+                increment_pc(cpu);
+            }
             break;
         }
         case SKNP_VX: {
-            // int vx = get_register(cpu, instruction->dest.reg);
+            int vx = get_register(cpu, instruction->dest.reg);
 
-            // check if the key with the value of VX is
-            // NOT being pressed.
-
-            // if it is NOT,
-            // increment PC by 2.
+            if (vx != cpu->keypress) {
+                increment_pc(cpu);
+            }
             break;
         }
         case LD_VX_DT: {
@@ -525,7 +521,7 @@ void execute(CPU* cpu, Instruction* instruction)
             break;
         }
         case LD_VX_K: {
-            // wait for a keypress, and store it in vx
+            set_register(cpu, instruction->dest.reg, cpu->keypress);
             break;
         }
         case LD_DT_VX: {
@@ -598,8 +594,9 @@ void execute(CPU* cpu, Instruction* instruction)
     }
 }
 
-int set_keypress(CPU* cpu, unsigned char key) {
-    cpu->key = key;
+void set_keypress(CPU* cpu, unsigned char key)
+{
+    cpu->keypress = key;
 }
 
 int get_register(CPU* cpu, Register reg)
