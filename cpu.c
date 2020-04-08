@@ -20,6 +20,8 @@ CPU *new_cpu(char* program_name)
     void *program_data_segment_start = &(cpu->memory[PROG_DATA_SEGMENT]);
     load_program_into_memory(program_data_segment_start, program_name);
 
+    cpu->key = 0;
+
     // Set all the registers to 0
     cpu->v0 = 0;
     cpu->v1 = 0;
@@ -594,6 +596,10 @@ void execute(CPU* cpu, Instruction* instruction)
         default:
             break;
     }
+}
+
+int set_keypress(CPU* cpu, unsigned char key) {
+    cpu->key = key;
 }
 
 int get_register(CPU* cpu, Register reg)

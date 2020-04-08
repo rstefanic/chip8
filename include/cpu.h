@@ -77,6 +77,9 @@ typedef struct {
     // 0x200 to 0xFFF: program data
     unsigned char memory[MAX_MEMORY];
 
+    // user's key press
+    unsigned char key;
+
     unsigned char v0;
     unsigned char v1;
     unsigned char v2;
