@@ -79,9 +79,31 @@ int main(int argc, char** argv)
     }
     else {
         box(win, 0, 0);
-        mvwprintw(win, 1, 1, "CHIP8");
-        wrefresh(win);
-        getch();
+        noecho();
+        nodelay(win, TRUE);
+        int c;
+
+        while (1) {
+            if ((c = getch()) == ERR) {
+                mvwprintw(win, 1, 1, "No user response");
+            }
+            else {
+                mvwprintw(win, 1, 1, "%c", c);
+            }
+
+            cpu->i = fetch(cpu);
+            Instruction* ins = decode(cpu->i);
+
+            if (ins == NULL) {
+                printf("ERR: could not allocate memory for instruction");
+                return -1;
+            }
+
+            execute(cpu, ins);
+            free(ins);
+
+            wrefresh(win);
+        }
     }
 
 
