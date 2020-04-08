@@ -427,6 +427,9 @@ void execute(CPU* cpu, Instruction* instruction)
             int vx = get_register(cpu, instruction->dest.reg);
             int vy = get_register(cpu, instruction->src.reg);
 
+            // Set VF = NOT borrow of VX from VY
+            set_register(cpu, VF, vx > vy);
+
             int result = vx - vy;
             set_register(cpu, instruction->dest.reg, result);
             break;
@@ -445,7 +448,9 @@ void execute(CPU* cpu, Instruction* instruction)
             int vx = get_register(cpu, instruction->dest.reg);
             int vy = get_register(cpu, instruction->src.reg);
 
-            // TODO(robert): revisit VF = NOT borrow
+            // Set VF = NOT borrow of VY from VX
+            set_register(cpu, VF, vy > vx);
+
             int result = vy - vx;
             set_register(cpu, instruction->dest.reg, result);
             break;
