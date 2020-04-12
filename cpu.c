@@ -496,7 +496,15 @@ void execute(CPU* cpu, Instruction* instruction)
             break;
         }
         case DRW_VX_VY_NIB: {
-            // Implement the draw function on the framebuffer
+            int vx = get_register(cpu, instruction->dest.reg);
+            int vy = get_register(cpu, instruction->src.reg);
+            int nibble = instruction->extra_operand.val;
+            int i = cpu->i;
+
+            for (register int j = 0; j < nibble; j++, i++) {
+                cpu->fb->buffer[vx * vy] = cpu->memory[i];
+            }
+
             break;
         }
         case SKP_VX: {
