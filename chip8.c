@@ -5,6 +5,7 @@ char debug_print[64];
 void setup_debug_output(WINDOW *win);
 void debug_output(WINDOW *win, CPU *cpu);
 int valid_keyboard_input(char c);
+void draw_buffer(CPU *cpu);
 
 int main(int argc, char** argv)
 {
@@ -79,11 +80,22 @@ int main(int argc, char** argv)
         } while(i < 10);
     }
     else {
-        box(win, 0, 0);
+        //box(win, 0, 0);
         noecho();
         nodelay(win, TRUE);
-        int c;
+        refresh();
+        wrefresh(win);
 
+        if (has_colors() == FALSE) {
+            endwin();
+            printf("ERR: This terminal does not support colors.");
+            exit(1);
+        }
+
+        init_pair(PIXEL_OFF, COLOR_WHITE, COLOR_BLACK);
+        init_pair(PIXEL_ON, COLOR_WHITE, COLOR_GREEN);
+
+        int c;
         while (1) {
             if ((c = getch()) == ERR) {
                 mvwprintw(win, 1, 1, "No user response");
@@ -107,6 +119,8 @@ int main(int argc, char** argv)
             execute(cpu, ins);
             free(ins);
 
+            draw_buffer(cpu);
+            refresh();
             wrefresh(win);
         }
     }
@@ -180,7 +194,7 @@ void debug_output(WINDOW *win, CPU *cpu)
     mvwprintw(win, 28, 2, "DEBUG_PRINT: %s", debug_print);
     mvwprintw(win, 30, 2, "Press any key to continue execution... ");
 
-    refresh();
+    draw_buffer(cpu);
     wrefresh(win);
 }
 
@@ -206,5 +220,19 @@ int valid_keyboard_input(char c)
             return 1;
         default:
             return 0;
+    }
+}
+
+void draw_buffer(CPU *cpu)
+{
+    for(int i = 0; i < TOTAL_FRAMEBUFFER_SIZE; i++) {
+        if (cpu->memory[i] == 1) {
+            attron(COLOR_PAIR(PIXEL_ON));
+            addch(' ');
+            attroff(COLOR_PAIR(PIXEL_OFF));
+        }
+        else {
+            addch(' ');
+        }
     }
 }
