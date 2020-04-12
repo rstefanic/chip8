@@ -461,7 +461,7 @@ void execute(CPU* cpu, Instruction* instruction)
             int vx = get_register(cpu, instruction->dest.reg);
 
             // Set VF based on whether or not the MSB on VX is set
-            set_register(cpu, VF, (vx & 0x40));
+            set_register(cpu, VF, (vx & 0x80));
 
             int result = vx << 1;
             set_register(cpu, instruction->dest.reg, result);
