@@ -607,7 +607,7 @@ void execute(CPU* cpu, Instruction* instruction)
             // them into Memory[I] from V0 to VX
             for (Register r = V0; r <= vx; r++) {
                 cpu->memory[i] = get_register(cpu, r);
-                i++;
+                i = i + r + 1;
             }
 
             increment_pc(cpu);
@@ -622,7 +622,7 @@ void execute(CPU* cpu, Instruction* instruction)
             for (Register r = V0; r <= vx; r++) {
                 int value = cpu->memory[i];
                 set_register(cpu, r, value);
-                i++;
+                i = i + r + 1;
             }
 
             increment_pc(cpu);
