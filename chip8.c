@@ -80,11 +80,10 @@ int main(int argc, char** argv)
         } while(i < 10);
     }
     else {
-        //box(win, 0, 0);
+        initscr();
+        curs_set(FALSE);
         noecho();
         nodelay(win, TRUE);
-        refresh();
-        wrefresh(win);
 
         if (has_colors() == FALSE) {
             endwin();
@@ -92,11 +91,14 @@ int main(int argc, char** argv)
             exit(1);
         }
 
+        start_color();
         init_pair(PIXEL_OFF, COLOR_WHITE, COLOR_BLACK);
         init_pair(PIXEL_ON, COLOR_WHITE, COLOR_GREEN);
 
         int c;
         while (1) {
+            clear();
+
             if ((c = getch()) == ERR) {
                 mvwprintw(win, 1, 1, "No user response");
             }
@@ -120,8 +122,6 @@ int main(int argc, char** argv)
             free(ins);
 
             draw_buffer(cpu);
-            refresh();
-            wrefresh(win);
         }
     }
 
@@ -235,4 +235,6 @@ void draw_buffer(CPU *cpu)
             addch(' ');
         }
     }
+
+    refresh();
 }
