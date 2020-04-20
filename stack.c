@@ -15,7 +15,8 @@ Stack* new_stack()
 
 unsigned int pop(Stack *stack)
 {
-    return stack->buffer[(stack->sp)--];
+    stack->sp--;
+    return stack->buffer[stack->sp];
 }
 
 void push(Stack *stack, unsigned int val)
