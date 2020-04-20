@@ -616,7 +616,7 @@ int get_register(CPU* cpu, Register reg)
         case V3: return cpu->v3;
         case V4: return cpu->v4;
         case V5: return cpu->v5;
-        case V6: return cpu->v1;
+        case V6: return cpu->v6;
         case V7: return cpu->v7;
         case V8: return cpu->v8;
         case V9: return cpu->v9;
@@ -642,7 +642,7 @@ void set_register(CPU* cpu, Register reg, int val)
         case V3: cpu->v3 = val; break;
         case V4: cpu->v4 = val; break;
         case V5: cpu->v5 = val; break;
-        case V6: cpu->v1 = val; break;
+        case V6: cpu->v6 = val; break;
         case V7: cpu->v7 = val; break;
         case V8: cpu->v8 = val; break;
         case V9: cpu->v9 = val; break;
