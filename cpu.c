@@ -128,7 +128,7 @@ Instruction* decode(unsigned short op_code)
         int val = op_code & 0x00FF;
 
         ins->op = SE_VX_BYTE;
-        ins->dest.reg = reg;
+        ins->dest.reg = reg >> TWO_NIBBLES;
         ins->src.val = val;
     }
     else if ((op_code & 0x4FFF) == op_code) {
@@ -137,17 +137,17 @@ Instruction* decode(unsigned short op_code)
         int val = op_code & 0x00FF;
 
         ins->op = SNE_VX_BYTE;
-        ins->dest.reg = reg;
+        ins->dest.reg = reg >> TWO_NIBBLES;
         ins->src.val = val;
     }
-    else if ((op_code & 0x5FFF) == op_code) {
+    else if ((op_code & 0x5FF0) == op_code) {
         // (5xy0) SE Vx, Vy
         int reg1 = op_code & 0x0F00;
         int reg2 = op_code & 0x00F0;
 
         ins->op = SE_VX_VY;
-        ins->dest.reg = reg1;
-        ins->src.reg = reg2;
+        ins->dest.reg = reg1 >> TWO_NIBBLES;
+        ins->src.reg = reg2 >> TWO_NIBBLES;
     }
     else if ((op_code & 0x6FFF) == op_code) {
         // (6xkk) LD Vx, byte
@@ -155,7 +155,7 @@ Instruction* decode(unsigned short op_code)
         int val = op_code & 0x00FF;
 
         ins->op = LD_VX_BYTE;
-        ins->dest.reg = reg;
+        ins->dest.reg = reg >> TWO_NIBBLES;
         ins->src.val = val;
     }
     else if ((op_code & 0x7FFF) == op_code) {
@@ -164,8 +164,6 @@ Instruction* decode(unsigned short op_code)
         int addr = op_code & 0x00FF;
 
         ins->op = ADD_VX_BYTE;
-        // shift 8 bits because I want the lower nibble in
-        // the least significant nibble
         ins->dest.reg = reg >> TWO_NIBBLES;
         ins->src.addr = addr;
     }
@@ -212,8 +210,8 @@ Instruction* decode(unsigned short op_code)
         int reg1 = op_code & 0x0F00;
         int reg2 = op_code & 0x00F0;
 
-        ins->dest.reg = reg1;
-        ins->src.reg = reg2;
+        ins->dest.reg = reg1 >> TWO_NIBBLES;
+        ins->src.reg = reg2 >> ONE_NIBBLE;
     }
     else if ((op_code & 0x9FF0) == op_code) {
         // (9xy0) SNE Vx, Vy
@@ -221,8 +219,8 @@ Instruction* decode(unsigned short op_code)
         int reg2 = op_code & 0x00F0;
 
         ins->op = SNE_VX_VY;
-        ins->dest.reg = reg1;
-        ins->src.reg = reg2;
+        ins->dest.reg = reg1 >> TWO_NIBBLES;
+        ins->src.reg = reg2 >> ONE_NIBBLE;
     }
     else if ((op_code & 0xAFFF) == op_code) {
         // (Annn) LD I, addr
@@ -244,7 +242,7 @@ Instruction* decode(unsigned short op_code)
         int val = op_code & 0x00FF;
 
         ins->op = RND_VX_BYTE;
-        ins->dest.reg = reg;
+        ins->dest.reg = reg >> TWO_NIBBLES;
         ins->src.val = val;
     }
     else if ((op_code & 0xDFFF) == op_code) {
@@ -254,8 +252,8 @@ Instruction* decode(unsigned short op_code)
         int val = op_code & 0x000F;
 
         ins->op = DRW_VX_VY_NIB;
-        ins->dest.reg = reg1;
-        ins->src.reg = reg2;
+        ins->dest.reg = reg1 >> TWO_NIBBLES;
+        ins->src.reg = reg2 >> ONE_NIBBLE;
         ins->extra_operand.val = val;
     }
     else if ((op_code & 0xEFFF) == op_code) {
@@ -269,7 +267,7 @@ Instruction* decode(unsigned short op_code)
         }
 
         int reg1 = op_code & 0x0F00;
-        ins->dest.reg = reg1;
+        ins->dest.reg = reg1 >> TWO_NIBBLES;
     }
     else if ((op_code & 0xFFFF) == op_code) {
         if ((op_code & 0xFF07) == op_code) {
@@ -310,7 +308,7 @@ Instruction* decode(unsigned short op_code)
         }
 
         int reg1 = op_code & 0x0F00;
-        ins->dest.reg = reg1;
+        ins->dest.reg = reg1 >> TWO_NIBBLES;
     }
 
     return ins;
