@@ -99,15 +99,15 @@ int main(int argc, char** argv)
         while (1) {
             clear();
 
-            if ((c = getch()) == ERR) {
-                mvwprintw(win, 1, 1, "No user response");
+            if ((c = wgetch(win)) == ERR) {
+                //mvwprintw(win, 1, 1, "No user response");
             }
             else if (!valid_keyboard_input(c)) {
-                mvwprintw(win, 1, 1, "Invlaid input");
+                //mvwprintw(win, 1, 1, "Invlaid input");
             }
             else {
                 set_keypress(cpu, c);
-                mvwprintw(win, 1, 1, "%c", c);
+                //mvwprintw(win, 1, 1, "%c", c);
             }
 
             unsigned short op_code = fetch(cpu);
@@ -121,6 +121,7 @@ int main(int argc, char** argv)
             execute(cpu, ins);
             free(ins);
 
+            usleep(50000);
             draw_buffer(cpu);
         }
     }
