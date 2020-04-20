@@ -62,8 +62,8 @@ int main(int argc, char** argv)
         getch();
 
         do {
-            cpu->i = fetch(cpu);
-            Instruction* ins = decode(cpu->i);
+            unsigned short op_code = fetch(cpu);
+            Instruction* ins = decode(op_code);
 
             if (ins == NULL) {
                 printf("ERR: could not allocate memory for instruction");
@@ -110,8 +110,8 @@ int main(int argc, char** argv)
                 mvwprintw(win, 1, 1, "%c", c);
             }
 
-            cpu->i = fetch(cpu);
-            Instruction* ins = decode(cpu->i);
+            unsigned short op_code = fetch(cpu);
+            Instruction* ins = decode(op_code);
 
             if (ins == NULL) {
                 printf("ERR: could not allocate memory for instruction");
@@ -225,14 +225,18 @@ int valid_keyboard_input(char c)
 
 void draw_buffer(CPU *cpu)
 {
-    for(int i = 0; i < TOTAL_FRAMEBUFFER_SIZE; i++) {
-        if (cpu->memory[i] == 1) {
-            attron(COLOR_PAIR(PIXEL_ON));
-            addch(' ');
-            attroff(COLOR_PAIR(PIXEL_OFF));
-        }
-        else {
-            addch(' ');
+    for(int y = 0; y < FRAME_HEIGHT; y++) {
+        for (int x = 0; x < FRAME_WIDTH; x++) {
+            if ((cpu->fb->buffer[x + (y * FRAME_WIDTH)] & 0x01) == 0x01) {
+                attron(COLOR_PAIR(PIXEL_ON));
+                addch(' ');
+                attroff(COLOR_PAIR(PIXEL_ON));
+            }
+            else {
+                attron(COLOR_PAIR(PIXEL_OFF));
+                addch(' ');
+                attroff(COLOR_PAIR(PIXEL_OFF));
+            }
         }
     }
 
