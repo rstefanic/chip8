@@ -115,12 +115,12 @@ Instruction* decode(unsigned short op_code)
     else if ((op_code & 0x1FFF) == op_code) {
         // (1nnn) JP addr
         ins->op = JP_ADDR;
-        ins->dest.addr = op_code & 0x1F;
+        ins->dest.addr = op_code & 0x0FFF;
     }
     else if ((op_code & 0x2FFF) == op_code) {
         // (2nnn) CALL addr
         ins->op = CALL_ADDR;
-        ins->dest.addr = op_code & 0x1F;
+        ins->dest.addr = op_code & 0x0FFF;
     }
     else if ((op_code & 0x3FFF) == op_code) {
         // (3xkk) SE Vx, byte
