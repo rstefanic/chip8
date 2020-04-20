@@ -3,7 +3,7 @@
 Framebuffer* new_framebuffer()
 {
     Framebuffer *framebuffer;
-    framebuffer = (Framebuffer*)malloc(sizeof(Framebuffer));
+    framebuffer = (Framebuffer*)calloc(TOTAL_FRAMEBUFFER_SIZE, sizeof(Framebuffer));
 
     // There's no need to check for NULL here because the
     // checks the return of this function for NULL
