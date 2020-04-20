@@ -302,7 +302,7 @@ Instruction* decode(unsigned short op_code)
             // (Fx55) LD [I], Vx
             ins->op = LD_I_VX;
         }
-        else if ((op_code & 0xFF0A) == op_code) {
+        else if ((op_code & 0xFF65) == op_code) {
             // (Fx65) LD Vx, [I]
             ins->op = LD_VX_I;
         }
