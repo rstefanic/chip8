@@ -87,7 +87,6 @@ unsigned short fetch(CPU *cpu)
     // the instructions are 16-bit
     op = (*memory_location) << BYTE_SIZE;
     op += *(memory_location + 1);
-    increment_pc(cpu);
     return op;
 }
 
@@ -324,11 +323,13 @@ void execute(CPU* cpu, Instruction* instruction)
     switch(op) {
         case CLS: {
             clear_buffer(cpu->fb);
+            increment_pc(cpu);
             break;
         }
         case RET: {
             int ret_address = pop(cpu->stack);
             cpu->pc = ret_address;
+            increment_pc(cpu);
             break;
         }
         case JP_ADDR: {
@@ -354,6 +355,8 @@ void execute(CPU* cpu, Instruction* instruction)
             if (vx == comparison_val) {
                 increment_pc(cpu);
             }
+
+            increment_pc(cpu);
             break;
         }
         case SNE_VX_BYTE: {
@@ -364,6 +367,8 @@ void execute(CPU* cpu, Instruction* instruction)
             if (vx != comparison_val) {
                 increment_pc(cpu);
             }
+
+            increment_pc(cpu);
             break;
         }
         case SE_VX_VY: {
@@ -378,7 +383,7 @@ void execute(CPU* cpu, Instruction* instruction)
         case LD_VX_BYTE: {
             int val = instruction->src.val;
             set_register(cpu, instruction->dest.reg, val);
-
+            increment_pc(cpu);
             break;
         }
         case ADD_VX_BYTE: {
@@ -386,11 +391,13 @@ void execute(CPU* cpu, Instruction* instruction)
             int new_val = current_val_at_vx + (instruction->src.val);
 
             set_register(cpu, instruction->dest.reg, new_val);
+            increment_pc(cpu);
             break;
         }
         case LD_VX_VY: {
             int vy = get_register(cpu, instruction->src.reg);
             set_register(cpu, instruction->dest.reg, vy);
+            increment_pc(cpu);
             break;
         }
         case OR_VX_VY: {
@@ -399,6 +406,7 @@ void execute(CPU* cpu, Instruction* instruction)
 
             int result = vx | vy;
             set_register(cpu, instruction->dest.reg, result);
+            increment_pc(cpu);
             break;
         }
         case AND_VX_VY: {
@@ -407,6 +415,7 @@ void execute(CPU* cpu, Instruction* instruction)
 
             int result = vx & vy;
             set_register(cpu, instruction->dest.reg, result);
+            increment_pc(cpu);
             break;
         }
         case XOR_VX_VY: {
@@ -415,6 +424,7 @@ void execute(CPU* cpu, Instruction* instruction)
 
             int result = vx ^ vy;
             set_register(cpu, instruction->dest.reg, result);
+            increment_pc(cpu);
             break;
         }
         case ADD_VX_VY: {
@@ -423,6 +433,7 @@ void execute(CPU* cpu, Instruction* instruction)
 
             int result = vx + vy;
             set_register(cpu, instruction->dest.reg, result);
+            increment_pc(cpu);
             break;
         }
         case SUB_VX_VY: {
@@ -434,6 +445,7 @@ void execute(CPU* cpu, Instruction* instruction)
 
             int result = vx - vy;
             set_register(cpu, instruction->dest.reg, result);
+            increment_pc(cpu);
             break;
         }
         case SHR_VX_VY: {
@@ -444,6 +456,7 @@ void execute(CPU* cpu, Instruction* instruction)
 
             int result = vx >> 1;
             set_register(cpu, instruction->dest.reg, result);
+            increment_pc(cpu);
             break;
         }
         case SUBN_VX_VY: {
@@ -455,6 +468,7 @@ void execute(CPU* cpu, Instruction* instruction)
 
             int result = vy - vx;
             set_register(cpu, instruction->dest.reg, result);
+            increment_pc(cpu);
             break;
         }
         case SHL_VX_VY: {
@@ -465,6 +479,7 @@ void execute(CPU* cpu, Instruction* instruction)
 
             int result = vx << 1;
             set_register(cpu, instruction->dest.reg, result);
+            increment_pc(cpu);
             break;
         }
         case SNE_VX_VY: {
@@ -474,11 +489,14 @@ void execute(CPU* cpu, Instruction* instruction)
             if (vx != vy) {
                 increment_pc(cpu);
             }
+
+            increment_pc(cpu);
             break;
         }
         case LD_ADDR: {
             int addr = instruction->dest.addr;
             cpu->i = addr;
+            increment_pc(cpu);
             break;
         }
         case JP_V0_ADDR: {
@@ -493,6 +511,7 @@ void execute(CPU* cpu, Instruction* instruction)
             int val = rand & (instruction->src.val);
 
             set_register(cpu, instruction->dest.reg, val);
+            increment_pc(cpu);
             break;
         }
         case DRW_VX_VY_NIB: {
@@ -505,6 +524,7 @@ void execute(CPU* cpu, Instruction* instruction)
                 cpu->fb->buffer[vx * vy] = cpu->memory[i];
             }
 
+            increment_pc(cpu);
             break;
         }
         case SKP_VX: {
@@ -513,6 +533,8 @@ void execute(CPU* cpu, Instruction* instruction)
             if (vx == cpu->keypress) {
                 increment_pc(cpu);
             }
+
+            increment_pc(cpu);
             break;
         }
         case SKNP_VX: {
@@ -521,25 +543,31 @@ void execute(CPU* cpu, Instruction* instruction)
             if (vx != cpu->keypress) {
                 increment_pc(cpu);
             }
+
+            increment_pc(cpu);
             break;
         }
         case LD_VX_DT: {
             int dt = cpu->dt;
             set_register(cpu, instruction->dest.reg, dt);
+            increment_pc(cpu);
             break;
         }
         case LD_VX_K: {
             set_register(cpu, instruction->dest.reg, cpu->keypress);
+            increment_pc(cpu);
             break;
         }
         case LD_DT_VX: {
             int vx = get_register(cpu, instruction->dest.reg);
             set_register(cpu, DT, vx);
+            increment_pc(cpu);
             break;
         }
         case LD_ST_VX: {
             int vx = get_register(cpu, instruction->dest.reg);
             set_register(cpu, ST, vx);
+            increment_pc(cpu);
             break;
         }
         case ADD_I_VX: {
@@ -548,6 +576,7 @@ void execute(CPU* cpu, Instruction* instruction)
             int result = i + vx;
 
             set_register(cpu, I, result);
+            increment_pc(cpu);
             break;
         }
         case LD_F_VX: {
@@ -559,6 +588,7 @@ void execute(CPU* cpu, Instruction* instruction)
             int result = vx * 5;
 
             set_register(cpu, I, result);
+            increment_pc(cpu);
             break;
         }
         case LD_B_VX: {
@@ -568,6 +598,7 @@ void execute(CPU* cpu, Instruction* instruction)
             cpu->memory[i] = bcd_hundreds_at(vx);
             cpu->memory[i + 1] = bcd_tens_at(vx);
             cpu->memory[i + 2] = bcd_ones_at(vx);
+            increment_pc(cpu);
             break;
         }
         case LD_I_VX: {
@@ -581,6 +612,7 @@ void execute(CPU* cpu, Instruction* instruction)
                 i++;
             }
 
+            increment_pc(cpu);
             break;
         }
         case LD_VX_I: {
@@ -595,6 +627,7 @@ void execute(CPU* cpu, Instruction* instruction)
                 i++;
             }
 
+            increment_pc(cpu);
             break;
         }
         default:
