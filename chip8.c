@@ -80,7 +80,6 @@ int main(int argc, char** argv)
         } while(i < 10);
     }
     else {
-        initscr();
         curs_set(FALSE);
         noecho();
         nodelay(win, TRUE);
