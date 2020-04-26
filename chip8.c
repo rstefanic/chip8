@@ -125,7 +125,11 @@ int main(int argc, char** argv)
             }
 
             usleep(25000);
-            draw_buffer(cpu);
+
+            if (cpu->draw_flag) {
+                draw_buffer(cpu);
+                clear_draw_flag(cpu);
+            }
         }
     }
 
