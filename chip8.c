@@ -120,7 +120,11 @@ int main(int argc, char** argv)
             execute(cpu, ins);
             free(ins);
 
-            usleep(50000);
+            if (cpu->dt > 0) {
+                decrement_dt(cpu);
+            }
+
+            usleep(25000);
             draw_buffer(cpu);
         }
     }
