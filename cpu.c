@@ -516,10 +516,27 @@ void execute(CPU* cpu, Instruction* instruction)
             int vx = get_register(cpu, instruction->dest.reg);
             int vy = get_register(cpu, instruction->src.reg);
             int nibble = instruction->extra_operand.val;
-            int i = cpu->i;
 
-            for (register int j = 0; j < nibble; j++, i++) {
-                cpu->fb->buffer[vx * vy] = cpu->memory[i];
+            // Set VF to 0 by default
+            set_register(cpu, VF, 0);
+
+            for(int n = 0; n < nibble; n++) {
+                int current_byte = cpu->memory[(cpu->i) + n];
+
+                for(int bit_pos = 0; bit_pos < BYTE_SIZE; bit_pos++) {
+                    int value = current_byte & (1 << (7 - bit_pos)) ? 0x01 : 0x00;
+
+                    int x = (vx + bit_pos) % FRAME_WIDTH;
+                    int y = (vy + n) % FRAME_HEIGHT;
+
+                    cpu->fb->buffer[x + (y * FRAME_WIDTH)] ^= value;
+
+                    int collision = cpu->fb->buffer[x + (y * FRAME_WIDTH)] & value;
+
+                    if (collision) {
+                        set_register(cpu, VF, 1);
+                    }
+                }
             }
 
             increment_pc(cpu);
