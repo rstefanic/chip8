@@ -44,6 +44,8 @@ CPU *new_cpu(char* program_name)
     cpu->pc = PROG_DATA_SEGMENT;
     cpu->i = 0;
 
+    cpu->draw_flag = 0;
+
     // Setup new stack and frame buffer
     cpu->stack = new_stack();
     if (cpu->stack == NULL) {
@@ -75,6 +77,16 @@ void increment_pc(CPU *cpu)
 {
     // instructions are read 16-bits at a time
     cpu->pc = cpu->pc + 2;
+}
+
+void set_draw_flag(CPU *cpu)
+{
+    cpu->draw_flag = 1;
+}
+
+void clear_draw_flag(CPU *cpu)
+{
+    cpu->draw_flag = 0;
 }
 
 unsigned short fetch(CPU *cpu)
@@ -322,6 +334,7 @@ void execute(CPU* cpu, Instruction* instruction)
         case CLS: {
             clear_buffer(cpu->fb);
             increment_pc(cpu);
+            set_draw_flag(cpu);
             break;
         }
         case RET: {
@@ -539,6 +552,7 @@ void execute(CPU* cpu, Instruction* instruction)
                 }
             }
 
+            set_draw_flag(cpu);
             increment_pc(cpu);
             break;
         }

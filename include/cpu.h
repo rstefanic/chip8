@@ -99,11 +99,15 @@ typedef struct {
     unsigned char dt;
     unsigned int pc;
     unsigned short i;
+
+    unsigned char draw_flag;
 } CPU;
 
 CPU *new_cpu();
 void decrement_st(CPU *cpu);
 void decrement_dt(CPU *cpu);
+void set_draw_flag(CPU *cpu);
+void clear_draw_flag(CPU *cpu);
 unsigned short fetch(CPU *cpu);
 Instruction* decode(unsigned short op_code);
 void execute(CPU* cpu, Instruction* instruction);
@@ -111,7 +115,6 @@ void set_keypress(CPU* cpu, unsigned char key);
 int get_register(CPU* cpu, Register reg);
 void set_register(CPU* cpu, Register reg, int val);
 void load_program_into_memory(void *program_data_segment, char *program_name);
-
 char* get_op_string(Op op);
 
 #endif /* CPU_H not defined */
