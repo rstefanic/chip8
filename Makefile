@@ -6,7 +6,7 @@ TERMINAL = gnome-terminal
 NCURSES = -lncurses
 INCLUDE = -Iinclude
 DEBUG = -d
-TESTROM = ./roms/test.ch8
+TESTROM = ./roms/test_opcode.ch8
 
 SRC = $(wildcard *.c)
 OBJS = $(SRC:%.c=obj/%.o)
