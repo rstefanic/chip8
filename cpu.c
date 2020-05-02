@@ -159,7 +159,7 @@ Instruction* decode(unsigned short op_code)
 
         ins->op = SE_VX_VY;
         ins->dest.reg = reg1 >> TWO_NIBBLES;
-        ins->src.reg = reg2 >> TWO_NIBBLES;
+        ins->src.reg = reg2 >> ONE_NIBBLE;
     }
     else if ((op_code & 0x6FFF) == op_code) {
         // (6xkk) LD Vx, byte
@@ -389,6 +389,8 @@ void execute(CPU* cpu, Instruction* instruction)
             if (vx == vy) {
                 increment_pc(cpu);
             }
+
+            increment_pc(cpu);
             break;
         }
         case LD_VX_BYTE: {
@@ -633,29 +635,33 @@ void execute(CPU* cpu, Instruction* instruction)
         case LD_I_VX: {
             Register vx = instruction->dest.reg;
             int i = cpu->i;
+            int registers_moved = 0;
 
             // Loop through the registers storing
             // them into Memory[I] from V0 to VX
-            for (Register r = V0; r <= vx; r++) {
+            for (Register r = V0; r <= vx; r++, registers_moved++) {
                 cpu->memory[i] = get_register(cpu, r);
-                i = i + r + 1;
+                i++;
             }
 
+            cpu->i += registers_moved + 1;
             increment_pc(cpu);
             break;
         }
         case LD_VX_I: {
             Register vx = instruction->dest.reg;
             int i = cpu->i;
+            int registers_moved = 0;
 
             // Fills V0 to VX with values from memory
             // starting at address I.
-            for (Register r = V0; r <= vx; r++) {
+            for (Register r = V0; r <= vx; r++, registers_moved++) {
                 int value = cpu->memory[i];
                 set_register(cpu, r, value);
-                i = i + r + 1;
+                i++;
             }
 
+            cpu->i += registers_moved + 1;
             increment_pc(cpu);
             break;
         }
