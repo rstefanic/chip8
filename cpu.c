@@ -63,6 +63,13 @@ CPU *new_cpu(char* program_name)
     return cpu;
 }
 
+void clean_cpu(CPU *cpu)
+{
+    free(cpu->stack);
+    free(cpu->fb);
+    free(cpu);
+}
+
 void decrement_st(CPU *cpu)
 {
     cpu->st--;

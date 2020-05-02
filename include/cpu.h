@@ -104,6 +104,7 @@ typedef struct {
 } CPU;
 
 CPU *new_cpu();
+void clean_cpu(CPU *cpu);
 void decrement_st(CPU *cpu);
 void decrement_dt(CPU *cpu);
 void set_draw_flag(CPU *cpu);
