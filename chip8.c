@@ -124,6 +124,11 @@ int main(int argc, char** argv)
                 decrement_dt(cpu);
             }
 
+            if (cpu->st > 0) {
+                beep();
+                decrement_st(cpu);
+            }
+
             usleep(5000);
 
             if (cpu->draw_flag) {
