@@ -135,13 +135,8 @@ int main(int argc, char** argv)
 
 
     // Teardown
-    endwin(); // exists ncurses
-
-    // Clean up CPU
-    // TODO(robert): Move this to the CPU in a CPU clean up function
-    free(cpu->stack);
-    free(cpu->fb);
-    free(cpu);
+    endwin();
+    clean_cpu(cpu);
     return 0;
 }
 
