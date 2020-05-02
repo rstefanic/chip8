@@ -124,7 +124,7 @@ int main(int argc, char** argv)
                 decrement_dt(cpu);
             }
 
-            usleep(25000);
+            usleep(5000);
 
             if (cpu->draw_flag) {
                 draw_buffer(cpu);
