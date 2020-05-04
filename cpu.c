@@ -572,6 +572,7 @@ void execute(CPU* cpu, Instruction* instruction)
                 increment_pc(cpu);
             }
 
+            clear_keypress(cpu);
             increment_pc(cpu);
             break;
         }
@@ -582,6 +583,7 @@ void execute(CPU* cpu, Instruction* instruction)
                 increment_pc(cpu);
             }
 
+            clear_keypress(cpu);
             increment_pc(cpu);
             break;
         }
@@ -679,7 +681,36 @@ void execute(CPU* cpu, Instruction* instruction)
 
 void set_keypress(CPU* cpu, unsigned char key)
 {
-    cpu->keypress = key;
+    switch(key) {
+        // First Row
+        case '1': cpu->keypress = 0x01; break;
+        case '2': cpu->keypress = 0x02; break;
+        case '3': cpu->keypress = 0x03; break;
+        case '4': cpu->keypress = 0x0C; break;
+
+        // Second Row
+        case 'q': cpu->keypress = 0x04; break;
+        case 'w': cpu->keypress = 0x05; break;
+        case 'e': cpu->keypress = 0x06; break;
+        case 'r': cpu->keypress = 0x0D; break;
+
+        // Third Row
+        case 'a': cpu->keypress = 0x07; break;
+        case 's': cpu->keypress = 0x08; break;
+        case 'd': cpu->keypress = 0x09; break;
+        case 'f': cpu->keypress = 0x0E; break;
+
+        // Fourth Row
+        case 'z': cpu->keypress = 0x0A; break;
+        case 'x': cpu->keypress = 0x00; break;
+        case 'c': cpu->keypress = 0x0B; break;
+        case 'v': cpu->keypress = 0x0F; break;
+    }
+}
+
+void clear_keypress(CPU *cpu)
+{
+    cpu->keypress = NO_KEYBOARD_INPUT;
 }
 
 int get_register(CPU* cpu, Register reg)
@@ -774,7 +805,7 @@ char* get_op_string(Op op)
         case JP_V0_ADDR: return "JP_V0_ADDR";
         case RND_VX_BYTE: return "RND_VX_BYTE";
         case DRW_VX_VY_NIB: return "DRW_VX_VY_NIB";
-        case SKP_VX: return "SKNP_VX";
+        case SKP_VX: return "SKP_VX";
         case SKNP_VX: return "SKNP_VX";
         case LD_VX_DT: return "LD_VX_DT";
         case LD_VX_K: return "LD_VX_K";

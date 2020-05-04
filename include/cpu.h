@@ -113,6 +113,7 @@ unsigned short fetch(CPU *cpu);
 Instruction* decode(unsigned short op_code);
 void execute(CPU* cpu, Instruction* instruction);
 void set_keypress(CPU* cpu, unsigned char key);
+void clear_keypress(CPU *cpu);
 int get_register(CPU* cpu, Register reg);
 void set_register(CPU* cpu, Register reg, int val);
 void load_program_into_memory(void *program_data_segment, char *program_name);
