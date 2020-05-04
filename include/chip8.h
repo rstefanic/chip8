@@ -21,6 +21,8 @@
 #define ONE_NIBBLE 4
 #define TWO_NIBBLES 8
 
+#define NO_KEYBOARD_INPUT 0x10
+
 /* Constant Strings */
 #define INVALID_ARG_MSG "ERR: Emulator requires a program to load"
 #define COULD_NOT_ALLOCATE_CPU_MEM "ERR: Could not allocate CPU memory"
