@@ -52,82 +52,59 @@ int main(int argc, char** argv)
         setup_debug_output(win);
         debug_output(win, cpu);
         getch();
-
-        // fetch, decode, execute
-        int i = 0;
-
-        sprintf(debug_print, "i: %d", i);
-        debug_output(win, cpu);
-        getch();
-
-        do {
-            unsigned short op_code = fetch(cpu);
-            Instruction* ins = decode(op_code);
-
-            if (ins == NULL) {
-                printf("ERR: could not allocate memory for instruction");
-                return -1;
-            }
-
-            execute(cpu, ins);
-
-            sprintf(debug_print, "Current Instruction: [%s]", get_op_string(ins->op));
-            free(ins);
-            debug_output(win, cpu);
-            getch();
-            i++;
-        } while(i < 10);
-    }
-    else {
-        curs_set(FALSE);
-        noecho();
-        nodelay(stdscr, TRUE);
-
-        if (has_colors() == FALSE) {
-            endwin();
-            printf("ERR: This terminal does not support colors.");
-            exit(1);
-        }
-
-        start_color();
-        init_pair(PIXEL_OFF, COLOR_WHITE, COLOR_BLACK);
-        init_pair(PIXEL_ON, COLOR_WHITE, COLOR_GREEN);
-
-        while (1) {
-            int ch = getch();
-            if (valid_keyboard_input(ch)) {
-                set_keypress(cpu, ch);
-            }
-
-            unsigned short op_code = fetch(cpu);
-            Instruction* ins = decode(op_code);
-
-            if (ins == NULL) {
-                printf("ERR: could not allocate memory for instruction");
-                return -1;
-            }
-
-            execute(cpu, ins);
-            free(ins);
-
-            if (cpu->dt > 0) {
-                decrement_dt(cpu);
-            }
-
-            if (cpu->st > 0) {
-                beep();
-                decrement_st(cpu);
-            }
-
-            usleep(5000);
-
-            if (cpu->draw_flag) {
-                draw_buffer(cpu->fb);
-                clear_draw_flag(cpu);
-            }
-        }
     }
 
+
+    // sprintf(debug_print, "Current Instruction: [%s]", get_op_string(ins->op));
+    // debug_output(win, cpu);
+
+    curs_set(FALSE);
+    noecho();
+    nodelay(stdscr, TRUE);
+
+    if (has_colors() == FALSE) {
+        endwin();
+        printf("ERR: This terminal does not support colors.");
+        exit(1);
+    }
+
+    start_color();
+    init_pair(PIXEL_OFF, COLOR_WHITE, COLOR_BLACK);
+    init_pair(PIXEL_ON, COLOR_WHITE, COLOR_GREEN);
+
+    for(;;) {
+        int ch = getch();
+        if (valid_keyboard_input(ch)) {
+            set_keypress(cpu, ch);
+        }
+
+        unsigned short op_code = fetch(cpu);
+        Instruction* ins = decode(op_code);
+
+        if (ins == NULL) {
+            printf("ERR: could not allocate memory for instruction");
+            return -1;
+        }
+
+        execute(cpu, ins);
+        free(ins);
+
+        if (cpu->dt > 0) {
+            decrement_dt(cpu);
+        }
+
+        if (cpu->st > 0) {
+            beep();
+            decrement_st(cpu);
+        }
+
+        usleep(5000);
+
+        if (cpu->draw_flag) {
+            draw_buffer(cpu->fb);
+            clear_draw_flag(cpu);
+        }
+    }
 
     // Teardown
     endwin();
