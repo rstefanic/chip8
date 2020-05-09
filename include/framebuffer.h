@@ -13,6 +13,7 @@ typedef struct {
 } Framebuffer;
 
 Framebuffer* new_framebuffer();
+void draw_buffer(Framebuffer *fb);
 void clear_buffer(Framebuffer *fb);
 
 #endif /* FRAMEBUFFER_H not defined */

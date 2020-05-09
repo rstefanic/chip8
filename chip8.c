@@ -5,7 +5,6 @@ char debug_print[64];
 void setup_debug_output(WINDOW *win);
 void debug_output(WINDOW *win, CPU *cpu);
 int valid_keyboard_input(char c);
-void draw_buffer(CPU *cpu);
 
 int main(int argc, char** argv)
 {
@@ -82,7 +81,7 @@ int main(int argc, char** argv)
     else {
         curs_set(FALSE);
         noecho();
-        nodelay(win, TRUE);
+        nodelay(stdscr, TRUE);
 
         if (has_colors() == FALSE) {
             endwin();
@@ -94,12 +93,10 @@ int main(int argc, char** argv)
         init_pair(PIXEL_OFF, COLOR_WHITE, COLOR_BLACK);
         init_pair(PIXEL_ON, COLOR_WHITE, COLOR_GREEN);
 
-        int c;
         while (1) {
-            clear();
-
-            if (valid_keyboard_input(c = wgetch(win))) {
-                set_keypress(cpu, c);
+            int ch = getch();
+            if (valid_keyboard_input(ch)) {
+                set_keypress(cpu, ch);
             }
 
             unsigned short op_code = fetch(cpu);
@@ -125,7 +122,7 @@ int main(int argc, char** argv)
             usleep(5000);
 
             if (cpu->draw_flag) {
-                draw_buffer(cpu);
+                draw_buffer(cpu->fb);
                 clear_draw_flag(cpu);
             }
         }
@@ -195,7 +192,6 @@ void debug_output(WINDOW *win, CPU *cpu)
     mvwprintw(win, 28, 2, "DEBUG_PRINT: %s", debug_print);
     mvwprintw(win, 30, 2, "Press any key to continue execution... ");
 
-    draw_buffer(cpu);
     wrefresh(win);
 }
 
@@ -222,24 +218,4 @@ int valid_keyboard_input(char c)
         default:
             return 0;
     }
-}
-
-void draw_buffer(CPU *cpu)
-{
-    for(int y = 0; y < FRAME_HEIGHT; y++) {
-        for (int x = 0; x < FRAME_WIDTH; x++) {
-            if ((cpu->fb->buffer[x + (y * FRAME_WIDTH)] & 0x01) == 0x01) {
-                attron(COLOR_PAIR(PIXEL_ON));
-                addch(' ');
-                attroff(COLOR_PAIR(PIXEL_ON));
-            }
-            else {
-                attron(COLOR_PAIR(PIXEL_OFF));
-                addch(' ');
-                attroff(COLOR_PAIR(PIXEL_OFF));
-            }
-        }
-    }
-
-    refresh();
 }
