@@ -43,17 +43,21 @@ int main(int argc, char** argv)
      * uninterrupted */
     raw(); 
 
-    int start_x = 0;
-    int start_y = 0;
+    int main_start_x = 0;
+    int main_start_y = 0;
 
-    WINDOW *win = newwin(FRAME_HEIGHT, FRAME_WIDTH, start_y, start_x);
+    WINDOW *main_win = newwin(FRAME_HEIGHT, FRAME_WIDTH, main_start_y, main_start_x);
+
+    refresh();
+    wrefresh(main_win);
 
     if (debug) {
-        setup_debug_output(win);
-        debug_output(win, cpu);
-        getch();
+        int debug_start_x = 65;
+        int debug_start_y = 0;
+        WINDOW *debug_win = newwin(FRAME_HEIGHT, FRAME_WIDTH, debug_start_y, debug_start_x);
+        setup_debug_output(debug_win);
+        debug_output(debug_win, cpu);
     }
-
 
     // sprintf(debug_print, "Current Instruction: [%s]", get_op_string(ins->op));
     // debug_output(win, cpu);
@@ -98,12 +102,13 @@ int main(int argc, char** argv)
             decrement_st(cpu);
         }
 
-        usleep(5000);
-
         if (cpu->draw_flag) {
-            draw_buffer(cpu->fb);
+            draw_buffer(main_win, cpu->fb);
             clear_draw_flag(cpu);
+            wrefresh(main_win);
         }
+
+        usleep(2500);
     }
 
     // Teardown

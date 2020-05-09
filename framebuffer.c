@@ -10,21 +10,21 @@ Framebuffer* new_framebuffer()
     return framebuffer;
 }
 
-void draw_buffer(Framebuffer *fb)
+void draw_buffer(WINDOW *win, Framebuffer *fb)
 {
-    clear();
+    werase(win);
 
-    for(int y = 0; y < FRAME_HEIGHT; y++) {
+    for (int y = 0; y < FRAME_HEIGHT; y++) {
         for (int x = 0; x < FRAME_WIDTH; x++) {
             if ((fb->buffer[x + (y * FRAME_WIDTH)] & 0x01) == 0x01) {
-                attron(COLOR_PAIR(PIXEL_ON));
-                addch(' ');
-                attroff(COLOR_PAIR(PIXEL_ON));
+                wattron(win, COLOR_PAIR(PIXEL_ON));
+                waddch(win, ' ');
+                wattroff(win, COLOR_PAIR(PIXEL_ON));
             }
             else {
-                attron(COLOR_PAIR(PIXEL_OFF));
-                addch(' ');
-                attroff(COLOR_PAIR(PIXEL_OFF));
+                wattron(win, COLOR_PAIR(PIXEL_OFF));
+                waddch(win, ' ');
+                wattroff(win, COLOR_PAIR(PIXEL_OFF));
             }
         }
     }
