@@ -6,7 +6,7 @@ TERMINAL = gnome-terminal
 NCURSES = -lncurses
 INCLUDE = -Iinclude
 DEBUG = -d
-TESTROM = ./roms/test_opcode.ch8
+TESTROM = ./roms/pong.ch8
 
 SRC = $(wildcard *.c)
 OBJS = $(SRC:%.c=obj/%.o)
@@ -21,7 +21,7 @@ debug:
 	$(TERMINAL) \
 	--profile \
 	--working-directory="$(CURDIR)" \
-	--geometry=64x32 \
+	--geometry=129x32 \
 	--title=CHIP8 \
 	-- "./chip8" $(DEBUG) $(TESTROM) \
 
