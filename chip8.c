@@ -2,7 +2,6 @@
 #include "cpu.h"
 
 char debug_print[64];
-void setup_debug_output(WINDOW *win);
 void debug_output(WINDOW *win, CPU *cpu);
 int valid_keyboard_input(char c);
 
@@ -18,7 +17,6 @@ int main(int argc, char** argv)
 
     if (strcmp(argv[argp], DEBUG_ARG_FLAG) == 0) {
          debug = 1;
-         getch();
          argp++;
     }
 
@@ -45,22 +43,20 @@ int main(int argc, char** argv)
 
     int main_start_x = 0;
     int main_start_y = 0;
+    int debug_start_x = 65;
+    int debug_start_y = 0;
 
     WINDOW *main_win = newwin(FRAME_HEIGHT, FRAME_WIDTH, main_start_y, main_start_x);
+    WINDOW *debug_win = newwin(FRAME_HEIGHT, FRAME_WIDTH, debug_start_y, debug_start_x);
 
     refresh();
     wrefresh(main_win);
 
     if (debug) {
-        int debug_start_x = 65;
-        int debug_start_y = 0;
-        WINDOW *debug_win = newwin(FRAME_HEIGHT, FRAME_WIDTH, debug_start_y, debug_start_x);
-        setup_debug_output(debug_win);
-        debug_output(debug_win, cpu);
+        box(debug_win, 0, 0);
+        refresh();
+        wrefresh(debug_win);
     }
-
-    // sprintf(debug_print, "Current Instruction: [%s]", get_op_string(ins->op));
-    // debug_output(win, cpu);
 
     curs_set(FALSE);
     noecho();
@@ -85,6 +81,10 @@ int main(int argc, char** argv)
         unsigned short op_code = fetch(cpu);
         Instruction* ins = decode(op_code);
 
+        if (debug) {
+            sprintf(debug_print, "Current Instruction: [%s]", get_op_string(ins->op));
+        }
+
         if (ins == NULL) {
             printf("ERR: could not allocate memory for instruction");
             return -1;
@@ -108,6 +108,11 @@ int main(int argc, char** argv)
             wrefresh(main_win);
         }
 
+        if (debug) {
+            debug_output(debug_win, cpu);
+            wrefresh(debug_win);
+        }
+
         usleep(2500);
     }
 
@@ -115,13 +120,6 @@ int main(int argc, char** argv)
     endwin();
     clean_cpu(cpu);
     return 0;
-}
-
-void setup_debug_output(WINDOW *win)
-{
-    box(win, 0, 0);
-    refresh();
-    wrefresh(win);
 }
 
 void debug_output(WINDOW *win, CPU *cpu)
@@ -172,9 +170,6 @@ void debug_output(WINDOW *win, CPU *cpu)
     mvwprintw(win, 11, 32, "REGCHECK: %d", (Register)4);
 
     mvwprintw(win, 28, 2, "DEBUG_PRINT: %s", debug_print);
-    mvwprintw(win, 30, 2, "Press any key to continue execution... ");
-
-    wrefresh(win);
 }
 
 int valid_keyboard_input(char c)
