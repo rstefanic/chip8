@@ -1,5 +1,6 @@
 #include "cpu.h"
 #include "font.h"
+#include "keypad.h"
 
 CPU *new_cpu(char* program_name)
 {
@@ -20,7 +21,7 @@ CPU *new_cpu(char* program_name)
     void *program_data_segment_start = &(cpu->memory[PROG_DATA_SEGMENT]);
     load_program_into_memory(program_data_segment_start, program_name);
 
-    cpu->keypress = 0;
+    cpu->keypad = new_keypad();
 
     // Set all the registers to 0
     cpu->v0 = 0;
@@ -65,6 +66,8 @@ CPU *new_cpu(char* program_name)
 
 void clean_cpu(CPU *cpu)
 {
+    stop_listening_for_keypresses(cpu->keypad);
+    free(cpu->keypad);
     free(cpu->stack);
     free(cpu->fb);
     free(cpu);
@@ -568,22 +571,22 @@ void execute(CPU* cpu, Instruction* instruction)
         case SKP_VX: {
             int vx = get_register(cpu, instruction->dest.reg);
 
-            if (vx == cpu->keypress) {
+            char key_is_pressed = poll_keypress(cpu->keypad, vx);
+            if (key_is_pressed) {
                 increment_pc(cpu);
             }
 
-            clear_keypress(cpu);
             increment_pc(cpu);
             break;
         }
         case SKNP_VX: {
             int vx = get_register(cpu, instruction->dest.reg);
 
-            if (vx != cpu->keypress) {
+            char key_is_pressed = poll_keypress(cpu->keypad, vx);
+            if (!key_is_pressed) {
                 increment_pc(cpu);
             }
 
-            clear_keypress(cpu);
             increment_pc(cpu);
             break;
         }
@@ -594,8 +597,18 @@ void execute(CPU* cpu, Instruction* instruction)
             break;
         }
         case LD_VX_K: {
-            set_register(cpu, instruction->dest.reg, cpu->keypress);
-            increment_pc(cpu);
+            // Since we only increment the PC when a key is
+            // pressed, execution effectively stops until
+            // a key is pressed.
+
+            // Spin through the keys until we find a keypress.
+            for(int i = 0; i < KEYPAD_SIZE; i++) {
+                if (poll_keypress(cpu->keypad, i)) {
+                    set_register(cpu, instruction->dest.reg, i);
+                    increment_pc(cpu);
+                }
+            }
+
             break;
         }
         case LD_DT_VX: {
@@ -679,39 +692,6 @@ void execute(CPU* cpu, Instruction* instruction)
     }
 }
 
-void set_keypress(CPU* cpu, unsigned char key)
-{
-    switch(key) {
-        // First Row
-        case '1': cpu->keypress = 0x01; break;
-        case '2': cpu->keypress = 0x02; break;
-        case '3': cpu->keypress = 0x03; break;
-        case '4': cpu->keypress = 0x0C; break;
-
-        // Second Row
-        case 'q': cpu->keypress = 0x04; break;
-        case 'w': cpu->keypress = 0x05; break;
-        case 'e': cpu->keypress = 0x06; break;
-        case 'r': cpu->keypress = 0x0D; break;
-
-        // Third Row
-        case 'a': cpu->keypress = 0x07; break;
-        case 's': cpu->keypress = 0x08; break;
-        case 'd': cpu->keypress = 0x09; break;
-        case 'f': cpu->keypress = 0x0E; break;
-
-        // Fourth Row
-        case 'z': cpu->keypress = 0x0A; break;
-        case 'x': cpu->keypress = 0x00; break;
-        case 'c': cpu->keypress = 0x0B; break;
-        case 'v': cpu->keypress = 0x0F; break;
-    }
-}
-
-void clear_keypress(CPU *cpu)
-{
-    cpu->keypress = NO_KEYBOARD_INPUT;
-}
 
 int get_register(CPU* cpu, Register reg)
 {

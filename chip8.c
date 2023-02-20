@@ -1,5 +1,6 @@
 #include "chip8.h"
 #include "cpu.h"
+#include "keypad.h"
 
 char debug_print[64];
 void debug_output(WINDOW *win, CPU *cpu);
@@ -72,12 +73,9 @@ int main(int argc, char** argv)
     init_pair(PIXEL_OFF, COLOR_WHITE, COLOR_BLACK);
     init_pair(PIXEL_ON, COLOR_WHITE, COLOR_GREEN);
 
-    for(;;) {
-        int ch = getch();
-        if (valid_keyboard_input(ch)) {
-            set_keypress(cpu, ch);
-        }
+    listen_for_keypresses(cpu->keypad);
 
+    for(;;) {
         unsigned short op_code = fetch(cpu);
         Instruction* ins = decode(op_code);
 
@@ -113,7 +111,7 @@ int main(int argc, char** argv)
             wrefresh(debug_win);
         }
 
-        usleep(2500);
+        usleep(2000);
     }
 
     // Teardown
@@ -168,6 +166,33 @@ void debug_output(WINDOW *win, CPU *cpu)
         PROG_DATA_SEGMENT + 1,
         cpu->memory[PROG_DATA_SEGMENT + 1]);
     mvwprintw(win, 11, 32, "REGCHECK: %d", (Register)4);
+
+    /* Keypad */
+    mvwprintw(win, 14, 32, "Keypad");
+
+    /* First Row */
+    mvwprintw(win, 16, 32, "%c", cpu->keypad->keys[0x01] ? '1' : '-');
+    mvwprintw(win, 16, 34, "%c", cpu->keypad->keys[0x02] ? '2' : '-');
+    mvwprintw(win, 16, 36, "%c", cpu->keypad->keys[0x03] ? '3' : '-');
+    mvwprintw(win, 16, 38, "%c", cpu->keypad->keys[0x0C] ? '4' : '-');
+
+    /* Second Row */
+    mvwprintw(win, 18, 32, "%c", cpu->keypad->keys[0x04] ? 'Q' : '-');
+    mvwprintw(win, 18, 34, "%c", cpu->keypad->keys[0x05] ? 'W' : '-');
+    mvwprintw(win, 18, 36, "%c", cpu->keypad->keys[0x06] ? 'E' : '-');
+    mvwprintw(win, 18, 38, "%c", cpu->keypad->keys[0x0D] ? 'R' : '-');
+
+    /* Third Row */
+    mvwprintw(win, 20, 32, "%c", cpu->keypad->keys[0x07] ? 'A' : '-');
+    mvwprintw(win, 20, 34, "%c", cpu->keypad->keys[0x08] ? 'S' : '-');
+    mvwprintw(win, 20, 36, "%c", cpu->keypad->keys[0x09] ? 'D' : '-');
+    mvwprintw(win, 20, 38, "%c", cpu->keypad->keys[0x0E] ? 'F' : '-');
+
+    /* Fourth Row */
+    mvwprintw(win, 22, 32, "%c", cpu->keypad->keys[0x0A] ? 'Z' : '-');
+    mvwprintw(win, 22, 34, "%c", cpu->keypad->keys[0x00] ? 'X' : '-');
+    mvwprintw(win, 22, 36, "%c", cpu->keypad->keys[0x0B] ? 'C' : '-');
+    mvwprintw(win, 22, 38, "%c", cpu->keypad->keys[0x0F] ? 'V' : '-');
 
     mvwprintw(win, 28, 2, "DEBUG_PRINT: %s", debug_print);
 }
