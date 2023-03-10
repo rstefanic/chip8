@@ -75,43 +75,70 @@ int main(int argc, char** argv)
 
     listen_for_keypresses(cpu->keypad);
 
+    unsigned int clock_cycles = 0;
+    struct timespec clock_cycle_timer;
+    clock_gettime(CLOCK_REALTIME, &clock_cycle_timer);
+
     for(;;) {
+        clock_cycles++;
+
+        // To simluate running the emulator at 500 Hz, we need to check every
+        // 8 clock cycles to see how long the execute took so we can sleep
+        // for 1/60th of a second so it feels like a 60 Hz timer cycle.
+        if ((clock_cycles % 8) == 0) {
+
+            // Find how long execute time was between the last and current cycle.
+            struct timespec now;
+            clock_gettime(CLOCK_REALTIME, &now);
+            struct timespec sleep_time = {
+                .tv_sec = 0,
+                .tv_nsec = ONE_SIXTIETH_OF_A_SECOND_IN_NS - (clock_cycle_timer.tv_nsec - now.tv_nsec)
+            };
+
+            // Sleep to make up the difference
+            nanosleep(&sleep_time, NULL);
+
+            // Reset clock_cycle_timer
+            clock_gettime(CLOCK_REALTIME, &clock_cycle_timer);
+
+            // Handle the CPU processes that only occur 60 times
+            // per second such as decrementing the timers and
+            // drawing the window buffer if the flag's set
+            if (cpu->dt > 0) {
+                decrement_dt(cpu);
+            }
+
+            if (cpu->st > 0) {
+                beep();
+                decrement_st(cpu);
+            }
+
+            if (cpu->draw_flag) {
+                draw_buffer(main_win, cpu->fb);
+                clear_draw_flag(cpu);
+                wrefresh(main_win);
+            }
+        }
+
         unsigned short op_code = fetch(cpu);
         Instruction* ins = decode(op_code);
-
-        if (debug) {
-            sprintf(debug_print, "Current Instruction: [%s]", get_op_string(ins->op));
-        }
 
         if (ins == NULL) {
             printf("ERR: could not allocate memory for instruction");
             return -1;
         }
 
+        if (debug) {
+            sprintf(debug_print, "Current Instruction: [%s]", get_op_string(ins->op));
+        }
+
         execute(cpu, ins);
         free(ins);
-
-        if (cpu->dt > 0) {
-            decrement_dt(cpu);
-        }
-
-        if (cpu->st > 0) {
-            beep();
-            decrement_st(cpu);
-        }
-
-        if (cpu->draw_flag) {
-            draw_buffer(main_win, cpu->fb);
-            clear_draw_flag(cpu);
-            wrefresh(main_win);
-        }
 
         if (debug) {
             debug_output(debug_win, cpu);
             wrefresh(debug_win);
         }
-
-        usleep(2000);
     }
 
     // Teardown

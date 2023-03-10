@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <unistd.h>
 
 /* Framebuffer sizes */
@@ -22,6 +23,8 @@
 #define TWO_NIBBLES 8
 
 #define NO_KEYBOARD_INPUT 0x10
+
+#define ONE_SIXTIETH_OF_A_SECOND_IN_NS 16670000
 
 /* Constant Strings */
 #define INVALID_ARG_MSG "ERR: Emulator requires a program to load"
